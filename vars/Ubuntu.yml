@@ -1,6 +1,7 @@
 ---
 
 gitlab_prereq_packages:
+  - git
   - rsync
   - curl
   - openssh-server
@@ -22,3 +23,5 @@ gitlab_prereq_packages:
   - libre2-dev
   - libcurl4-openssl-dev
   - libssl-dev
+  # - libkrb5-dev
+  - graphicsmagick

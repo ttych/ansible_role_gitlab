@@ -6,3 +6,6 @@
     packages: "{{ gitlab_prereq_packages }}",
     services: []
   }
+
+- name: install git
+  include: install_git.yml

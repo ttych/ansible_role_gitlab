@@ -1,6 +1,7 @@
 ---
 
 gitlab_prereq_packages:
+  - git
   - rsync
   - curl
   - gmake
@@ -15,3 +16,5 @@ gitlab_prereq_packages:
   - icu
   - gdbm
   - re2
+  - pcre2
+  - GraphicsMagick
