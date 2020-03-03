@@ -1,2 +1,16 @@
 ---
-# tasks file for ansible_role_gitlab
+
+- block:
+    - include: context.yml
+
+    - include: workspace.yml
+
+    - include: install.yml
+
+    - include: setup.yml
+
+  when: want_gitlab
+
+- name: "set has_gitlab to {{ want_gitlab }}"
+  set_fact:
+    has_gitlab: "{{ want_gitlab }}"
