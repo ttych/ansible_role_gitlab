@@ -1,13 +1,24 @@
 ---
 
+# service architecture
+# https://docs.gitlab.com/ee/development/architecture.html
+
 - block:
     - include: context.yml
+
+    - include: accounts.yml
+      vars: {
+        accounts_groups: "{{ gitlab_ce_groups }}",
+        accounts_users: "{{ gitlab_ce_users }}"
+      }
 
     - include: workspace.yml
 
     - include: install.yml
 
-    - include: setup.yml
+    # - include: setup.yml
+
+    # - include: service.yml
 
   when: want_gitlab
 

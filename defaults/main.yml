@@ -1,3 +1,36 @@
 ---
 
 want_gitlab: false
+
+
+gitlab_user: git
+gitlab_group: git
+
+gitlab_ce_users:
+  - name: git
+    comment: git
+    group: git
+    groups:
+    home: "{{ gitlab_git_home|default('/home/git') }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+    uid: 3125
+    home_mode: '0700'
+    password: '*'
+
+gitlab_ce_groups:
+  - { name: git, gid: 3125 }
+
+
+gitlab_git_home: /home/git
+gitlab_git_ssh_dir: "{{ gitlab_git_home }}/.ssh"
+gitlab_app_dir: "{{ gitlab_git_home }}/gitlab"
+gitlab_shell_dir: "{{ gitlab_git_home }}/gitlab-shell"
+gitlab_repositories_dir: "{{ gitlab_git_home }}/repositories"
+
+gitlab_directories:
+  - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
+  - { path: "{{ gitlab_git_ssh_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
+  - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
+  - { path: "{{ gitlab_shell_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
+  - { path: "{{ gitlab_repositories_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
