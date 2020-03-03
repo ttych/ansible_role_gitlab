@@ -1,7 +1,9 @@
 ---
 
-# service architecture
+## service architecture
 # https://docs.gitlab.com/ee/development/architecture.html
+## backup
+# https://docs.gitlab.com/ee/raketasks/backup_restore.html
 
 - block:
     - include: context.yml
