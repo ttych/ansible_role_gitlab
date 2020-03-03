@@ -1,0 +1,17 @@
+---
+
+gitlab_prereq_packages:
+  - rsync
+  - curl
+  - gmake
+  - cmake
+  - lzlib
+  - libyaml
+  - readline
+  - libffi
+  - libxslt
+  - libxml2
+  - ncurses
+  - icu
+  - gdbm
+  - re2

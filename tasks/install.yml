@@ -1,5 +1,8 @@
 ---
 
-# Backup
-# https://docs.gitlab.com/ee/raketasks/backup_restore.html
-# - rsync
+- name: install required packages
+  include: install_packages.yml
+  vars: {
+    packages: "{{ gitlab_prereq_packages }}",
+    services: []
+  }

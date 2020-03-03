@@ -1,0 +1,24 @@
+---
+
+gitlab_prereq_packages:
+  - rsync
+  - curl
+  - openssh-server
+  - logrotate
+  - pkg-config
+  - checkinstall
+  - cmake
+  - build-essential
+  - python-docutils
+  - zlib1g-dev
+  - libyaml-dev
+  - libreadline-dev
+  - libffi-dev
+  - libxslt-dev
+  - libxml2-dev
+  - libncurses5-dev
+  - libicu-dev
+  - libgdbm-dev
+  - libre2-dev
+  - libcurl4-openssl-dev
+  - libssl-dev
