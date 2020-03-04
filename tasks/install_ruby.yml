@@ -13,7 +13,7 @@
   block:
     - name: get Ruby version
       shell: "{{ gitlab_tools_ruby_dir }}/bin/ruby --version | cut -d ' ' -f2"
-      changed_when: false
+      changed_when: no
       register: t_gitlab_ruby_version
 
     - name: set gitlab_ruby_version_valid
@@ -27,11 +27,6 @@
   when: t_gitlab_ruby_bin.stat.exists
 
 
-# FIXME: delete debug
-# - debug:
-#     msg: "{{ t_gitlab_ruby_install }}"
-
-
 - name: "build Ruby {{ gitlab_ruby_version }}"
   block:
     - name: "download Ruby {{ gitlab_ruby_version }}"
@@ -40,32 +35,39 @@
         dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_ruby_archive }}"
         mode: "0444"
 
-# FIXME: clean tmp => ruby, git
-
     - name: "extract archive"
       unarchive:
         remote_src: yes
         src: "{{ gitlab_distfiles_dir }}/{{ gitlab_ruby_archive }}"
         dest: "{{ gitlab_tmp_dir }}"
-        owner: "{{ gitlab_user }}"
-        group: "{{ gitlab_group }}"
         mode: "go-w"
 
-#     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
-#       shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --with-libpcre && make all && make install"
-#       args:
-#         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
-#       become: yes
-#       become_user: "{{ gitlab_user }}"
+    - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --disable-install-rdoc && make all && make install"
+      args:
+        chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
 
-#     - name: "link this release"
-#       file:
-#         src: "{{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
-#         dest: "{{ gitlab_tools_ruby_dir }}"
-#         force: yes
-#         state: link
+    - name: "link this release"
+      file:
+        src: "{{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
+        dest: "{{ gitlab_tools_ruby_dir }}"
+        force: yes
+        state: link
 
-    # - name: install bundler
-    # sudo gem install bundler --no-document --version '< 2'
+    - name: clean build directory
+      file:
+        path: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
+        state: absent
 
   when: t_gitlab_ruby_install
+
+
+- name: check bundler version
+  command: "{{ gitlab_tools_ruby_dir }}/bin/gem info -i bundler --version '<2'"
+  changed_when: no
+  failed_when: no
+  register: t_gitlab_ruby_bundler_valid
+
+- name: install bundler version < 2
+  command: "{{ gitlab_tools_ruby_dir }}/bin/gem install bundler --no-document --version '< 2'"
+  when: t_gitlab_ruby_bundler_valid.rc != 0

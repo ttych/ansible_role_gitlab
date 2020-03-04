@@ -27,5 +27,4 @@ gitlab_prereq_packages:
   - graphicsmagick
   - libexpat1-dev
   - gettext
-  - libz-dev
   - libpcre2-dev

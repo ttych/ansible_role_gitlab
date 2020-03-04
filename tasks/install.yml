@@ -9,6 +9,10 @@
 
 - name: install Git
   include: install_git.yml
+  become: yes
+  become_user: "{{ gitlab_user }}"
 
 - name: install Ruby
   include: install_ruby.yml
+  become: yes
+  become_user: "{{ gitlab_user }}"

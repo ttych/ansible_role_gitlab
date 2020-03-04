@@ -13,7 +13,7 @@
   block:
     - name: get Git version
       shell: "{{ gitlab_tools_git_dir }}/bin/git --version | cut -d ' ' -f3"
-      changed_when: false
+      changed_when: no
       register: t_gitlab_git_version
 
     - name: set gitlab_git_version_valid
@@ -46,16 +46,12 @@
         remote_src: yes
         src: "{{ gitlab_distfiles_dir }}/{{ gitlab_git_archive }}"
         dest: "{{ gitlab_tmp_dir }}"
-        owner: "{{ gitlab_user }}"
-        group: "{{ gitlab_group }}"
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_git_release }}"
       shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && make all && make install"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
-      become: yes
-      become_user: "{{ gitlab_user }}"
 
     - name: "link this release"
       file:
@@ -63,5 +59,10 @@
         dest: "{{ gitlab_tools_git_dir }}"
         force: yes
         state: link
+
+    - name: clean build directory
+      file:
+        path: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
+        state: absent
 
   when: t_gitlab_git_install
