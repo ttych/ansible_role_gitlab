@@ -32,6 +32,7 @@ gitlab_tmp_dir: "{{ gitlab_dir }}/tmp"
 gitlab_tools_dir: "{{ gitlab_dir }}/tools"
 gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
 gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
+gitlab_tools_go_dir: "{{ gitlab_tools_dir }}/go"
 
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
@@ -52,3 +53,9 @@ gitlab_ruby_version: 2.6.5
 gitlab_ruby_release: "ruby-{{ gitlab_ruby_version }}"
 gitlab_ruby_archive: "{{ gitlab_ruby_release }}.tar.xz"
 gitlab_ruby_url: "https://cache.ruby-lang.org/pub/ruby/{{ gitlab_ruby_version.split('.')[0:2] | join('.') }}/{{ gitlab_ruby_archive }}"
+
+gitlab_go_version: 1.13.8
+gitlab_go_arch: "{{ ansible_architecture | regex_replace('x86_64', 'amd64') }}"
+gitlab_go_release: "go{{ gitlab_go_version }}.{{ ansible_system | lower }}-{{ gitlab_go_arch }}"
+gitlab_go_archive: "{{ gitlab_go_release }}.tar.gz"
+gitlab_go_url: "https://dl.google.com/go/{{ gitlab_go_archive }}"

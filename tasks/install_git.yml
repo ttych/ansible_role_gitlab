@@ -33,7 +33,7 @@
   when: t_gitlab_git_bin.stat.exists
 
 
-- name: "build Git {{ gitlab_git_version }}"
+- name: "install Git {{ gitlab_git_version }}"
   block:
     - name: "download Git {{ gitlab_git_version }}"
       get_url:

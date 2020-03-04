@@ -27,7 +27,7 @@
   when: t_gitlab_ruby_bin.stat.exists
 
 
-- name: "build Ruby {{ gitlab_ruby_version }}"
+- name: "install Ruby {{ gitlab_ruby_version }}"
   block:
     - name: "download Ruby {{ gitlab_ruby_version }}"
       get_url:

@@ -1,0 +1,46 @@
+---
+
+- name: stat Go distribution
+  stat:
+    path: "{{ gitlab_tools_go_dir }}/bin/go"
+  register: t_gitlab_go_bin
+
+- name: "set install Go to {{ not t_gitlab_go_bin.stat.exists }}"
+  set_fact:
+    t_gitlab_go_install: "{{ not t_gitlab_go_bin.stat.exists }}"
+
+
+- name: "install Go {{ gitlab_go_version }}"
+  block:
+    - name: "download Go {{ gitlab_go_version }}"
+      get_url:
+        url: "{{ gitlab_go_url }}"
+        dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_go_archive }}"
+        mode: "0644"
+
+    - name: "extract archive"
+      unarchive:
+        remote_src: yes
+        src: "{{ gitlab_distfiles_dir }}/{{ gitlab_go_archive }}"
+        dest: "{{ gitlab_tmp_dir }}"
+        mode: "go-w"
+
+    - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_go_release }}"
+      copy:
+        remote_src: yes
+        src: "{{ gitlab_tmp_dir }}/go/"
+        dest: "{{ gitlab_tools_dir }}/{{ gitlab_go_release }}"
+
+    - name: "link this release"
+      file:
+        src: "{{ gitlab_tools_dir }}/{{ gitlab_go_release }}"
+        dest: "{{ gitlab_tools_go_dir }}"
+        force: yes
+        state: link
+
+    - name: clean build directory
+      file:
+        path: "{{ gitlab_tmp_dir }}/{{ gitlab_go_release }}"
+        state: absent
+
+  when: t_gitlab_go_install

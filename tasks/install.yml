@@ -16,3 +16,8 @@
   include: install_ruby.yml
   become: yes
   become_user: "{{ gitlab_user }}"
+
+- name: install Go
+  include: install_go.yml
+  become: yes
+  become_user: "{{ gitlab_user }}"
