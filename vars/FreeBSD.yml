@@ -18,3 +18,8 @@ gitlab_prereq_packages:
   - re2
   - pcre2
   - GraphicsMagick
+
+  # FIXME
+  # - libexpat1-dev
+  # - gettext
+  # - libz-dev

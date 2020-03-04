@@ -25,3 +25,7 @@ gitlab_prereq_packages:
   - libssl-dev
   # - libkrb5-dev
   - graphicsmagick
+  - libexpat1-dev
+  - gettext
+  - libz-dev
+  - libpcre2-dev

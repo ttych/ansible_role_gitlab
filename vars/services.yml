@@ -2,6 +2,3 @@
 
 gitlab_dir: "{{ services_dir }}/gitlab"
 gitlab_git_home: "{{ gitlab_dir }}/git"
-gitlab_app_dir: "{{ gitlab_dir }}/gitlab"
-gitlab_shell_dir: "{{ gitlab_dir }}/gitlab-shell"
-gitlab_repositories_dir: "{{ gitlab_dir }}/repositories"

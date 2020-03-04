@@ -21,12 +21,16 @@ gitlab_ce_users:
 gitlab_ce_groups:
   - { name: git, gid: 3125 }
 
-
-gitlab_git_home: /home/git
+gitlab_dir: /home/git
+gitlab_git_home: "{{ gitlab_dir }}"
 gitlab_git_ssh_dir: "{{ gitlab_git_home }}/.ssh"
-gitlab_app_dir: "{{ gitlab_git_home }}/gitlab"
-gitlab_shell_dir: "{{ gitlab_git_home }}/gitlab-shell"
-gitlab_repositories_dir: "{{ gitlab_git_home }}/repositories"
+gitlab_app_dir: "{{ gitlab_dir }}/gitlab"
+gitlab_shell_dir: "{{ gitlab_dir }}/gitlab-shell"
+gitlab_repositories_dir: "{{ gitlab_dir }}/repositories"
+gitlab_distfiles_dir: "{{ gitlab_dir }}/distfiles"
+gitlab_tmp_dir: "{{ gitlab_dir }}/tmp"
+gitlab_tools_dir: "{{ gitlab_dir }}/tools"
+gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
 
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
@@ -34,3 +38,11 @@ gitlab_directories:
   - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_shell_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_repositories_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
+  - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+
+gitlab_git_version: 2.25.1
+gitlab_git_release: "git-{{ gitlab_git_version }}"
+gitlab_git_archive: "{{ gitlab_git_release }}.tar.xz"
+gitlab_git_url: "https://mirrors.edge.kernel.org/pub/software/scm/git/{{ gitlab_git_archive }}"

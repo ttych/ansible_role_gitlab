@@ -1,9 +1,18 @@
 ---
 
-- name: check standard git package
+- name: stat git distribution
+  stat:
+    path: "{{ gitlab_tools_git_dir }}/bin/git"
+  register: t_gitlab_git_bin
+
+- name: "set install git to {{ not t_gitlab_git_bin.stat.exists }}"
+  set_fact:
+    t_gitlab_git_install: "{{ not t_gitlab_git_bin.stat.exists }}"
+
+- name: check git distribution
   block:
     - name: get git version
-      shell: git --version | cut -d ' ' -f3
+      shell: "{{ gitlab_tools_git_dir }}/bin/git --version | cut -d ' ' -f3"
       changed_when: false
       register: t_gitlab_git_version
 
@@ -11,20 +20,53 @@
       set_fact:
         gitlab_git_version_valid: "{{ t_gitlab_git_version.stdout is version('2.22.0', '>=') }}"
 
-    # FIXME: clean
-    - debug:
-        msg: "{{ t_gitlab_git_version.stdout }}"
-
-    # FIXME: clean
-    - debug:
-        msg: "{{ gitlab_git_version_valid }}"
-
     - name: check git shared object dependency with pcre2
-      shell: ldd `which git` | grep pcre2
+      shell: "ldd {{ gitlab_tools_git_dir }}/bin/git | grep pcre2"
       changed_when: false
       failed_when: false
       register: t_gitlab_git_pcre2_dep
 
-    # FIXME: clean
-    - debug:
-        msg: "{{ t_gitlab_git_pcre2_dep.rc }}"
+    - name: "set install git to {{ not gitlab_git_version_valid or (t_gitlab_git_pcre2_dep.rc != 0) }}"
+      set_fact:
+        t_gitlab_git_install: "{{ not gitlab_git_version_valid or (t_gitlab_git_pcre2_dep.rc != 0) }}"
+
+  when: t_gitlab_git_bin.stat.exists
+
+
+# FIXME: delete debug
+- debug:
+    msg: "{{ t_gitlab_git_install }}"
+
+
+- name: "build git {{ gitlab_git_version }}"
+  block:
+    - name: "download git {{ gitlab_git_version }}"
+      get_url:
+        url: "{{ gitlab_git_url }}"
+        dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_git_archive }}"
+        mode: "0444"
+
+    - name: "extract archive"
+      unarchive:
+        remote_src: yes
+        src: "{{ gitlab_distfiles_dir }}/{{ gitlab_git_archive }}"
+        dest: "{{ gitlab_tmp_dir }}"
+        owner: "{{ gitlab_user }}"
+        group: "{{ gitlab_group }}"
+        mode: "go-w"
+
+    - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_git_release }}"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && make all && make install"
+      args:
+        chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
+
+    - name: "link this release"
+      file:
+        src: "{{ gitlab_tools_dir }}/{{ gitlab_git_release }}"
+        dest: "{{ gitlab_tools_git_dir }}"
+        force: yes
+        state: link
+
+  when: t_gitlab_git_install

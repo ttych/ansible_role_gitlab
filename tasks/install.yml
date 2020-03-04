@@ -7,5 +7,5 @@
     services: []
   }
 
-- name: install git
+- name: install Git
   include: install_git.yml
