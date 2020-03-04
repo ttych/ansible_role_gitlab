@@ -31,6 +31,7 @@ gitlab_distfiles_dir: "{{ gitlab_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_dir }}/tmp"
 gitlab_tools_dir: "{{ gitlab_dir }}/tools"
 gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
+gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
 
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
@@ -46,3 +47,8 @@ gitlab_git_version: 2.25.1
 gitlab_git_release: "git-{{ gitlab_git_version }}"
 gitlab_git_archive: "{{ gitlab_git_release }}.tar.xz"
 gitlab_git_url: "https://mirrors.edge.kernel.org/pub/software/scm/git/{{ gitlab_git_archive }}"
+
+gitlab_ruby_version: 2.6.5
+gitlab_ruby_release: "ruby-{{ gitlab_ruby_version }}"
+gitlab_ruby_archive: "{{ gitlab_ruby_release }}.tar.xz"
+gitlab_ruby_url: "https://cache.ruby-lang.org/pub/ruby/{{ gitlab_ruby_version.split('.')[0:2] | join('.') }}/{{ gitlab_ruby_archive }}"

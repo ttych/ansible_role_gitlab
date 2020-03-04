@@ -1,0 +1,71 @@
+---
+
+- name: stat Ruby distribution
+  stat:
+    path: "{{ gitlab_tools_ruby_dir }}/bin/ruby"
+  register: t_gitlab_ruby_bin
+
+- name: "set install Ruby to {{ not t_gitlab_ruby_bin.stat.exists }}"
+  set_fact:
+    t_gitlab_ruby_install: "{{ not t_gitlab_ruby_bin.stat.exists }}"
+
+- name: check Ruby distribution
+  block:
+    - name: get Ruby version
+      shell: "{{ gitlab_tools_ruby_dir }}/bin/ruby --version | cut -d ' ' -f2"
+      changed_when: false
+      register: t_gitlab_ruby_version
+
+    - name: set gitlab_ruby_version_valid
+      set_fact:
+        gitlab_ruby_version_valid: "{{ t_gitlab_ruby_version.stdout is version('2.6.5', '>=') }}"
+
+    - name: "set install Ruby to {{ not gitlab_ruby_version_valid }}"
+      set_fact:
+        t_gitlab_ruby_install: "{{ not gitlab_ruby_version_valid }}"
+
+  when: t_gitlab_ruby_bin.stat.exists
+
+
+# FIXME: delete debug
+# - debug:
+#     msg: "{{ t_gitlab_ruby_install }}"
+
+
+- name: "build Ruby {{ gitlab_ruby_version }}"
+  block:
+    - name: "download Ruby {{ gitlab_ruby_version }}"
+      get_url:
+        url: "{{ gitlab_ruby_url }}"
+        dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_ruby_archive }}"
+        mode: "0444"
+
+# FIXME: clean tmp => ruby, git
+
+    - name: "extract archive"
+      unarchive:
+        remote_src: yes
+        src: "{{ gitlab_distfiles_dir }}/{{ gitlab_ruby_archive }}"
+        dest: "{{ gitlab_tmp_dir }}"
+        owner: "{{ gitlab_user }}"
+        group: "{{ gitlab_group }}"
+        mode: "go-w"
+
+#     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
+#       shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --with-libpcre && make all && make install"
+#       args:
+#         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
+#       become: yes
+#       become_user: "{{ gitlab_user }}"
+
+#     - name: "link this release"
+#       file:
+#         src: "{{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
+#         dest: "{{ gitlab_tools_ruby_dir }}"
+#         force: yes
+#         state: link
+
+    # - name: install bundler
+    # sudo gem install bundler --no-document --version '< 2'
+
+  when: t_gitlab_ruby_install

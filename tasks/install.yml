@@ -9,3 +9,6 @@
 
 - name: install Git
   include: install_git.yml
+
+- name: install Ruby
+  include: install_ruby.yml
