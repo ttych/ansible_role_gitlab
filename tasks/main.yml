@@ -18,7 +18,7 @@
 
     - include: install.yml
 
-    # - include: setup.yml
+    - include: setup_db.yml
 
     # - include: service.yml
 

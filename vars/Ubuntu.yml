@@ -31,3 +31,5 @@ gitlab_prereq_packages:
   - golang
   - nodejs
   - npm
+  - postgresql-client
+  - libpq-dev

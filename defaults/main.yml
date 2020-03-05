@@ -61,3 +61,7 @@ gitlab_go_archive: "{{ gitlab_go_release }}.tar.gz"
 gitlab_go_url: "https://dl.google.com/go/{{ gitlab_go_archive }}"
 
 gitlab_make: make
+
+gitlab_postgresql_owner: postgres
+gitlab_postgresql_db: gitlabhq_production
+gitlab_postgresql_user: "{{ gitlab_user }}"
