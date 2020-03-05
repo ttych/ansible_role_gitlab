@@ -28,3 +28,6 @@ gitlab_prereq_packages:
   - libexpat1-dev
   - gettext
   - libpcre2-dev
+  - golang
+  - nodejs
+  - npm

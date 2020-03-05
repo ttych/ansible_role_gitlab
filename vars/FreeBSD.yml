@@ -20,3 +20,11 @@ gitlab_prereq_packages:
   - GraphicsMagick
   - expat
   - gettext
+  - go
+  - node
+  - npm
+
+gitlab_make: gmake
+
+gitlab_CPPFLAGS: -isystem/usr/local/include
+gitlab_LDFLAGS: -L/usr/local/lib

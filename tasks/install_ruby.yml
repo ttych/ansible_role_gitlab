@@ -33,7 +33,7 @@
       get_url:
         url: "{{ gitlab_ruby_url }}"
         dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_ruby_archive }}"
-        mode: "0444"
+        mode: "0644"
 
     - name: "extract archive"
       unarchive:
@@ -43,9 +43,12 @@
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
-      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --disable-install-rdoc && make all && make install"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --disable-install-rdoc && {{ gitlab_make }} -j {{ ansible_processor_count }} all && {{ gitlab_make }} install"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
+      environment:
+        CPPFLAGS: "{{ gitlab_CPPFLAGS | default(omit) }}"
+        LDFLAGS: "{{ gitlab_LDFLAGS | default(omit) }}"
 
     - name: "link this release"
       file:
