@@ -21,3 +21,8 @@
 #   include: install_go.yml
 #   become: yes
 #   become_user: "{{ gitlab_user }}"
+
+- name: install redis
+  include: install_redis.yml
+  become: yes
+  become_user: "{{ gitlab_user }}"

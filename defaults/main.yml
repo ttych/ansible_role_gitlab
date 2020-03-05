@@ -33,6 +33,7 @@ gitlab_tools_dir: "{{ gitlab_dir }}/tools"
 gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
 gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
 gitlab_tools_go_dir: "{{ gitlab_tools_dir }}/go"
+gitlab_tools_redis_dir: "{{ gitlab_tools_dir }}/redis"
 
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
@@ -65,3 +66,8 @@ gitlab_make: make
 gitlab_postgresql_owner: postgres
 gitlab_postgresql_db: gitlabhq_production
 gitlab_postgresql_user: "{{ gitlab_user }}"
+
+gitlab_redis_version: 5.0.7
+gitlab_redis_release: "redis-{{ gitlab_redis_version }}"
+gitlab_redis_archive: "{{ gitlab_redis_release }}.tar.gz"
+gitlab_redis_url: "http://download.redis.io/releases/{{ gitlab_redis_archive }}"

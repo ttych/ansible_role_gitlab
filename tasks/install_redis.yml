@@ -1,0 +1,48 @@
+---
+
+- name: stat redis distribution
+  stat:
+    path: "{{ gitlab_tools_redis_dir }}/bin/redis-server"
+  register: t_gitlab_redis_bin
+
+- name: "set install redis to {{ not t_gitlab_redis_bin.stat.exists }}"
+  set_fact:
+    t_gitlab_redis_install: "{{ not t_gitlab_redis_bin.stat.exists }}"
+
+
+- name: "install redis {{ gitlab_redis_version }}"
+  block:
+    - name: "download redis {{ gitlab_redis_version }}"
+      get_url:
+        url: "{{ gitlab_redis_url }}"
+        dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_redis_archive }}"
+        mode: "0644"
+
+    - name: "extract archive"
+      unarchive:
+        remote_src: yes
+        src: "{{ gitlab_distfiles_dir }}/{{ gitlab_redis_archive }}"
+        dest: "{{ gitlab_tmp_dir }}"
+        mode: "go-w"
+
+    - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
+      shell: "{{ gitlab_make }} -j {{ ansible_processor_count }} && {{ gitlab_make }} install PREFIX={{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
+      args:
+        chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_redis_release }}"
+      environment:
+        CPPFLAGS: "{{ gitlab_CPPFLAGS | default(omit) }}"
+        LDFLAGS: "{{ gitlab_LDFLAGS | default(omit) }}"
+
+    - name: "link this release"
+      file:
+        src: "{{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
+        dest: "{{ gitlab_tools_redis_dir }}"
+        force: yes
+        state: link
+
+    - name: clean build directory
+      file:
+        path: "{{ gitlab_tmp_dir }}/{{ gitlab_redis_release }}"
+        state: absent
+
+  when: t_gitlab_redis_install
