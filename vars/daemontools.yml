@@ -1,0 +1,12 @@
+---
+
+gitlab_daemontools_dir: "{{ gitlab_dir }}/svscan"
+
+gitlab_daemontools_directories_template:
+  - { path: "", owner: root, group: "{{ root_group }}", mode: "0755" }
+  - { path: "/log", owner: root, group: "{{ root_group }}", mode: "0755" }
+  - { path: "/log/main", owner: "{{ daemontools_logger_user }}", group: "{{ root_group }}", mode: "0755" }
+
+gitlab_daemontools_scripts_template:
+  - { path: run, owner: root, group: "{{ root_group }}", mode: "0755" }
+  - { path: log/run, owner: root, group: "{{ root_group }}", mode: "0755" }

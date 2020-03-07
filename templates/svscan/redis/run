@@ -1,0 +1,6 @@
+#!/bin/sh
+
+exec 2>&1
+
+exec setuidgid "{{ gitlab_user }}" \
+     "{{ gitlab_tools_redis_dir }}"/bin/redis-server "{{ gitlab_redis_conf }}"

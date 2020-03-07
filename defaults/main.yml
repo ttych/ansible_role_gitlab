@@ -29,6 +29,8 @@ gitlab_shell_dir: "{{ gitlab_dir }}/gitlab-shell"
 gitlab_repositories_dir: "{{ gitlab_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_dir }}/tmp"
+gitlab_etc_dir: "{{ gitlab_dir }}/etc"
+gitlab_run_dir: "{{ gitlab_dir }}/run"
 gitlab_tools_dir: "{{ gitlab_dir }}/tools"
 gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
 gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
@@ -44,6 +46,8 @@ gitlab_directories:
   - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_run_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
 
 gitlab_git_version: 2.25.1
 gitlab_git_release: "git-{{ gitlab_git_version }}"
@@ -71,3 +75,13 @@ gitlab_redis_version: 5.0.7
 gitlab_redis_release: "redis-{{ gitlab_redis_version }}"
 gitlab_redis_archive: "{{ gitlab_redis_release }}.tar.gz"
 gitlab_redis_url: "http://download.redis.io/releases/{{ gitlab_redis_archive }}"
+
+gitlab_redis_port: 0
+gitlab_redis_bind: 127.0.0.1
+gitlab_redis_socket: "{{ gitlab_run_dir }}/redis.sock"
+gitlab_redis_socket_permission: 700
+gitlab_redis_pidfile: "{{ gitlab_run_dir }}/redis.pid"
+gitlab_redis_logfile: "''"
+gitlab_redis_workdir: "{{ gitlab_run_dir }}"
+gitlab_redis_dbfile: "redis.dump.rdb"
+gitlab_redis_conf: "{{ gitlab_etc_dir }}/redis.conf"
