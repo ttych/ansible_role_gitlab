@@ -1,0 +1,16 @@
+---
+
+- block:
+    - name: "checkout gitlab repository {{ gitlab_gitlab_version }}"
+      git:
+        repo: "{{ gitlab_gitlab_repository }}"
+        dest: "{{ gitlab_gitlab_dir }}"
+        version: "{{ gitlab_gitlab_version }}"
+        accept_hostkey: yes
+        umask: "022"
+        force: yes
+      register: t_gitlab_gitlab_checkout
+
+  become: yes
+  become_user: "{{ gitlab_user }}"
+

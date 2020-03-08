@@ -43,7 +43,7 @@
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_ruby_release }}"
-      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --disable-install-rdoc && {{ gitlab_make }} -j {{ ansible_processor_count }} all && {{ gitlab_make }} install"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_ruby_release }} --disable-install-rdoc && {{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} all && {{ gitlab_make }} install"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
       environment:

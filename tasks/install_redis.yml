@@ -26,12 +26,13 @@
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
-      shell: "{{ gitlab_make }} -j {{ ansible_processor_count }} && {{ gitlab_make }} install PREFIX={{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
+      shell: "(cd deps && {{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} hiredis  jemalloc linenoise lua) && {{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} && {{ gitlab_make }} install PREFIX={{ gitlab_tools_dir }}/{{ gitlab_redis_release }}"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_redis_release }}"
       environment:
-        CPPFLAGS: "{{ gitlab_CPPFLAGS | default(omit) }}"
-        LDFLAGS: "{{ gitlab_LDFLAGS | default(omit) }}"
+        PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+        CPPFLAGS: "{{ gitlab_CPPFLAGS | default('') }}"
+        LDFLAGS: "{{ gitlab_LDFLAGS | default('') }}"
 
     - name: "link this release"
       file:

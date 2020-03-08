@@ -22,6 +22,8 @@
 
     - include: setup_redis.yml
 
+    - include: setup_gitlab.yml
+
     # - include: service.yml
 
   when: want_gitlab

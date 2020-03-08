@@ -33,3 +33,4 @@ gitlab_prereq_packages:
   - npm
   - postgresql-client
   - libpq-dev
+  - xsltproc

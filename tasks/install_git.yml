@@ -49,7 +49,7 @@
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_git_release }}"
-      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && {{ gitlab_make }} -j {{ ansible_processor_count }} all && {{ gitlab_make }} install"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && {{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} all && {{ gitlab_make }} install"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
       environment:

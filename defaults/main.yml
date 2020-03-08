@@ -85,3 +85,7 @@ gitlab_redis_logfile: "''"
 gitlab_redis_workdir: "{{ gitlab_run_dir }}"
 gitlab_redis_dbfile: "redis.dump.rdb"
 gitlab_redis_conf: "{{ gitlab_etc_dir }}/redis.conf"
+
+gitlab_gitlab_dir: "{{ gitlab_app_dir }}"
+gitlab_gitlab_version: 12-8-stable
+gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
