@@ -1,0 +1,26 @@
+---
+
+
+
+# GIT command
+
+
+# # Configure Git global settings for git user
+# # 'autocrlf' is needed for the web editor
+# sudo -u git -H git config --global core.autocrlf input
+
+# # Disable 'git gc --auto' because GitLab already runs 'git gc' when needed
+# sudo -u git -H git config --global gc.auto 0
+
+# # Enable packfile bitmaps
+# sudo -u git -H git config --global repack.writeBitmaps true
+
+# # Enable push options
+# sudo -u git -H git config --global receive.advertisePushOptions true
+
+# # Enable fsyncObjectFiles to reduce risk of repository corruption if the server crashes
+# sudo -u git -H git config --global core.fsyncObjectFiles true
+
+
+
+

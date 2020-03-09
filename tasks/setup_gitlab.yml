@@ -11,6 +11,65 @@
         force: yes
       register: t_gitlab_gitlab_checkout
 
+    - name: deploy gitlab config files
+      template:
+        src: "{{ item.template }}"
+        dest: "{{ gitlab_gitlab_dir }}/{{ item.dest }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { template: gitlab/config/gitlab.yml,
+            dest: config/gitlab.yml,
+            mode: '0644' }
+        - { template: gitlab/config/unicorn.rb,
+            dest: config/unicorn.rb,
+            mode: '0644' }
+        - { template: gitlab/config/initializers/rack_attack.rb,
+            dest: config/initializers/rack_attack.rb,
+            mode: '0644' }
+        - { template: gitlab/config/resque.yml,
+            dest: config/resque.yml,
+            mode: '0644' }
+
+    - name: stat gitlab config/secrets.yml
+      stat:
+        path: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
+      register: t_gitlab_secrets_stat
+
+    - block:
+        - name: generate random string
+          command: makepasswd --chars 30
+          changed_when: false
+          register: t_gitlab_secrets_random
+
+        - name: set gitlab production db_key_base secret
+          set_fact:
+            gitlab_db_key_base_production: "{{ t_gitlab_secrets_random.stdout }}"
+          when: gitlab_db_key_base_production is not defined
+
+        - name: deploy gitlab config/secrets.yml
+          template:
+            src: "gitlab/config/secrets.yml"
+            dest: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
+            mode: "0600"
+
+      when: not t_gitlab_secrets_stat.stat.exists
+
+    - name: fix gitlab workdir permissions
+      file:
+        path: "{{ gitlab_gitlab_dir }}/{{ item.path }}"
+        owner: "{{ item.owner|d(gitlab_user) }}"
+        group: "{{ item.group|d(gitlab_group) }}"
+        mode: "{{ item.mode }}"
+        state: directory
+      loop:
+        - { path: log, mode: '4750' }
+        - { path: tmp, mode: '4750' }
+        - { path: tmp/pids, mode: '4750' }
+        - { path: tmp/sockets, mode: '4750' }
+        - { path: public/uploads, mode: '0700' }
+        - { path: builds, mode: '4750' }
+        - { path: shared/artifacts, mode: '4750' }
+        - { path: shared/pages, mode: '6770' }
+
   become: yes
   become_user: "{{ gitlab_user }}"
-

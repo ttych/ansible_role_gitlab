@@ -6,7 +6,7 @@ want_gitlab: false
 gitlab_user: git
 gitlab_group: git
 
-gitlab_ce_users:
+gitlab_users:
   - name: git
     comment: git
     group: git
@@ -18,8 +18,10 @@ gitlab_ce_users:
     home_mode: '0700'
     password: '*'
 
-gitlab_ce_groups:
+gitlab_groups:
   - { name: git, gid: 3125 }
+
+gitlab_domain: local
 
 gitlab_dir: /home/git
 gitlab_git_home: "{{ gitlab_dir }}"
@@ -89,3 +91,7 @@ gitlab_redis_conf: "{{ gitlab_etc_dir }}/redis.conf"
 gitlab_gitlab_dir: "{{ gitlab_app_dir }}"
 gitlab_gitlab_version: 12-8-stable
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
+
+gitlab_gitaly_socket: "{{ gitlab_run_dir }}/gitaly.socket"
+
+# FIXME: gitlab.yml -> elasticsearch

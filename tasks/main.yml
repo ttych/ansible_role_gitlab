@@ -10,17 +10,19 @@
 
     - include: accounts.yml
       vars: {
-        accounts_groups: "{{ gitlab_ce_groups }}",
-        accounts_users: "{{ gitlab_ce_users }}"
+        accounts_groups: "{{ gitlab_groups }}",
+        accounts_users: "{{ gitlab_users }}"
       }
 
     - include: workspace.yml
 
     - include: install.yml
 
-    - include: setup_db.yml
+    # - include: setup_db.yml
 
     - include: setup_redis.yml
+
+    - include: git_config.yml
 
     - include: setup_gitlab.yml
 
