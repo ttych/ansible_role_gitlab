@@ -1,0 +1,8 @@
+---
+
+- block:
+    - include: git_config.yml config="{{ item }}"
+      loop: "{{ gitlab_git_configs }}"
+
+  become: yes
+  become_user: "{{ gitlab_user }}"

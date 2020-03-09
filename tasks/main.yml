@@ -22,7 +22,7 @@
 
     - include: setup_redis.yml
 
-    - include: git_config.yml
+    - include: git_configs.yml
 
     - include: setup_gitlab.yml
 
