@@ -75,5 +75,48 @@
         - { path: shared/pages, mode: '6770' }
 
 
+
+    - name: check bundle install
+      command: bundle check
+      changed_when: no
+      failed_when: no
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+      }}/bin:{{ ansible_env['PATH'] }}"
+      register: t_gitlab_bundle_check
+
+    # - name: get current bundle install
+    #   command: bundle lock --print
+    #   changed_when: no
+    #   args:
+    #     chdir: "{{ gitlab_gitlab_dir }}"
+    #   environment:
+    #     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+    #   }}/bin:{{ ansible_env['PATH'] }}"
+    #   register: t_gitlab_bundle_install_current
+
+    # - name: get expected bundle install
+    #   command: cat Gemfile.lock
+    #   changed_when: no
+    #   args:
+    #     chdir: "{{ gitlab_gitlab_dir }}"
+    #   environment:
+    #     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+    #   }}/bin:{{ ansible_env['PATH'] }}"
+    #   register: t_gitlab_bundle_install_expected
+
+    - name: bundle install
+      command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without development test mysql aws kerberos"
+      changed_when: false
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+      }}/bin:{{ ansible_env['PATH'] }}"
+      when: t_gitlab_bundle_check.rc != 0 # or (t_gitlab_bundle_install_current.stdout != t_gitlab_bundle_install_expected.stdout)
+
+
   become: yes
   become_user: "{{ gitlab_user }}"
