@@ -29,6 +29,9 @@
         - { template: gitlab/config/resque.yml,
             dest: config/resque.yml,
             mode: '0644' }
+        - { template: gitlab/config/database.yml.postgresql,
+            dest: config/database.yml,
+            mode: '0640' }
 
     - name: stat gitlab config/secrets.yml
       stat:
@@ -70,6 +73,7 @@
         - { path: builds, mode: '4750' }
         - { path: shared/artifacts, mode: '4750' }
         - { path: shared/pages, mode: '6770' }
+
 
   become: yes
   become_user: "{{ gitlab_user }}"
