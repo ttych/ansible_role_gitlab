@@ -8,23 +8,23 @@
 - block:
     - include: context.yml
 
-    # - include: accounts.yml
-    #   vars: {
-    #     accounts_groups: "{{ gitlab_groups }}",
-    #     accounts_users: "{{ gitlab_users }}"
-    #   }
+    - include: accounts.yml
+      vars: {
+        accounts_groups: "{{ gitlab_groups }}",
+        accounts_users: "{{ gitlab_users }}"
+      }
 
     - include: workspace.yml
 
-    # - include: install.yml
+    - include: install.yml
 
     # - include: setup_db.yml
 
-    # - include: setup_redis.yml
+    - include: setup_redis.yml
 
-    # - include: git_configs.yml
+    - include: git_configs.yml
 
-    # - include: setup_gitlab.yml
+    - include: setup_gitlab.yml
 
     - include: setup_gitlab_shell.yml
 

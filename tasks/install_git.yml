@@ -49,12 +49,13 @@
         mode: "go-w"
 
     - name: "install to {{ gitlab_tools_dir }}/{{ gitlab_git_release }}"
-      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && {{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} all && {{ gitlab_make }} install"
+      shell: "./configure --prefix={{ gitlab_tools_dir }}/{{ gitlab_git_release }} --with-libpcre && make -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} all && make install"
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
       environment:
-        CPPFLAGS: "{{ gitlab_CPPFLAGS | default(omit) }}"
-        LDFLAGS: "{{ gitlab_LDFLAGS | default(omit) }}"
+        PATH: "{{ gitlab_PATH }}"
+        CPPFLAGS: "{{ gitlab_CPPFLAGS | default('') }}"
+        LDFLAGS: "{{ gitlab_LDFLAGS | default('') }}"
 
     - name: "link this release"
       file:

@@ -64,21 +64,21 @@
       args:
         chdir: "{{ gitlab_shell_dir }}"
       environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+        PATH: "{{ gitlab_PATH }}"
 
     - name: build gitlab-shell
-      command: "{{ gitlab_make }} -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} build"
+      command: "make -j {{ ansible_processor_vcpus|d(ansible_processor_count) }} build"
       args:
         chdir: "{{ gitlab_shell_dir }}"
       environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+        PATH: "{{ gitlab_PATH }}"
 
     - name: call standard rake task
       command: "bundle exec rake gitlab:shell:install REDIS_URL=unix:{{ gitlab_redis_socket }} RAILS_ENV=production SKIP_STORAGE_VALIDATION=true"
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ ansible_env['PATH'] }}"
+        PATH: "{{ gitlab_PATH }}"
 
   become: yes
   become_user: "{{ gitlab_user }}"

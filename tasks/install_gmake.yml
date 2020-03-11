@@ -1,0 +1,24 @@
+---
+
+- block:
+    - name: create gmake directories
+      file:
+        path: "{{ item }}"
+        mode: "0755"
+        state: directory
+      loop:
+        - "{{ gitlab_tools_gmake_dir }}"
+        - "{{ gitlab_tools_gmake_dir }}/bin"
+
+    - name: find gmake
+      command: which gmake
+      changed_when: no
+      register: t_gitlab_gmake_bin
+
+    - name: link gmake
+      file:
+        src: "{{ t_gitlab_gmake_bin.stdout }}"
+        dest: "{{ gitlab_tools_gmake_dir }}/bin/make"
+        state: link
+
+  when: ansible_system == 'FreeBSD'

@@ -25,7 +25,5 @@ gitlab_prereq_packages:
   - npm
   - apg
 
-gitlab_make: gmake
-
 gitlab_CPPFLAGS: -isystem/usr/local/include
 gitlab_LDFLAGS: -L/usr/local/lib

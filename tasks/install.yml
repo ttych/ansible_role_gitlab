@@ -7,6 +7,15 @@
     services: []
   }
 
+- name: set PATH for gitlab
+  set_fact:
+    gitlab_PATH: "{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_go_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ gitlab_tools_gmake_dir }}/bin:{{ ansible_env['PATH'] }}"
+
+- name: install gmake
+  include: install_gmake.yml
+  become: yes
+  become_user: "{{ gitlab_user }}"
+
 - name: install Git
   include: install_git.yml
   become: yes
