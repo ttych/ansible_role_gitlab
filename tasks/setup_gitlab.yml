@@ -1,109 +1,128 @@
 ---
 
+# Not working when using copy, template
+# - block:
+#   become: yes
+#   become_user: "{{ gitlab_user }}"
+
+- name: "checkout gitlab repository {{ gitlab_gitlab_version }}"
+  git:
+    repo: "{{ gitlab_gitlab_repository }}"
+    dest: "{{ gitlab_gitlab_dir }}"
+    version: "{{ gitlab_gitlab_version }}"
+    accept_hostkey: yes
+    umask: "022"
+    force: yes
+  register: t_gitlab_gitlab_checkout
+  become: yes
+  become_user: "{{ gitlab_user }}"
+
+- name: deploy gitlab config files
+  template:
+    src: "{{ item.template }}"
+    dest: "{{ gitlab_gitlab_dir }}/{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ gitlab_user }}"
+    group: "{{ gitlab_group }}"
+  loop:
+    - { template: gitlab/config/gitlab.yml,
+        dest: config/gitlab.yml,
+        mode: '0644' }
+    - { template: gitlab/config/unicorn.rb,
+        dest: config/unicorn.rb,
+        mode: '0644' }
+    - { template: gitlab/config/initializers/rack_attack.rb,
+        dest: config/initializers/rack_attack.rb,
+        mode: '0644' }
+    - { template: gitlab/config/resque.yml,
+        dest: config/resque.yml,
+        mode: '0644' }
+    - { template: gitlab/config/database.yml.postgresql,
+        dest: config/database.yml,
+        mode: '0640' }
+
+- name: stat gitlab config/secrets.yml
+  stat:
+    path: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
+  register: t_gitlab_secrets_stat
+
 - block:
-    - name: "checkout gitlab repository {{ gitlab_gitlab_version }}"
-      git:
-        repo: "{{ gitlab_gitlab_repository }}"
-        dest: "{{ gitlab_gitlab_dir }}"
-        version: "{{ gitlab_gitlab_version }}"
-        accept_hostkey: yes
-        umask: "022"
-        force: yes
-      register: t_gitlab_gitlab_checkout
-
-    - name: deploy gitlab config files
-      template:
-        src: "{{ item.template }}"
-        dest: "{{ gitlab_gitlab_dir }}/{{ item.dest }}"
-        mode: "{{ item.mode }}"
-      loop:
-        - { template: gitlab/config/gitlab.yml,
-            dest: config/gitlab.yml,
-            mode: '0644' }
-        - { template: gitlab/config/unicorn.rb,
-            dest: config/unicorn.rb,
-            mode: '0644' }
-        - { template: gitlab/config/initializers/rack_attack.rb,
-            dest: config/initializers/rack_attack.rb,
-            mode: '0644' }
-        - { template: gitlab/config/resque.yml,
-            dest: config/resque.yml,
-            mode: '0644' }
-        - { template: gitlab/config/database.yml.postgresql,
-            dest: config/database.yml,
-            mode: '0640' }
-
-    - name: stat gitlab config/secrets.yml
-      stat:
-        path: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
-      register: t_gitlab_secrets_stat
-
-    - block:
-        - name: generate random string
-          command: makepasswd --chars 30
-          changed_when: no
-          register: t_gitlab_secrets_random
-
-        - name: set gitlab production db_key_base secret
-          set_fact:
-            gitlab_db_key_base_production: "{{ t_gitlab_secrets_random.stdout }}"
-          when: gitlab_db_key_base_production is not defined
-
-        - name: deploy gitlab config/secrets.yml
-          template:
-            src: "gitlab/config/secrets.yml"
-            dest: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
-            mode: "0600"
-
-      when: not t_gitlab_secrets_stat.stat.exists
-
-    - name: fix gitlab workdir permissions
-      file:
-        path: "{{ gitlab_gitlab_dir }}/{{ item.path }}"
-        owner: "{{ item.owner|d(gitlab_user) }}"
-        group: "{{ item.group|d(gitlab_group) }}"
-        mode: "{{ item.mode }}"
-        state: directory
-      loop:
-        - { path: log, mode: '4750' }
-        - { path: tmp, mode: '4750' }
-        - { path: tmp/pids, mode: '4750' }
-        - { path: tmp/sockets, mode: '4750' }
-        - { path: public/uploads, mode: '0700' }
-        - { path: builds, mode: '4750' }
-        - { path: shared/artifacts, mode: '4750' }
-        - { path: shared/pages, mode: '6770' }
-
-
-    - name: check bundle install
-      command: bundle check
+    - name: generate random string
+      command: apg -m 30 -n 1
       changed_when: no
-      failed_when: no
-      args:
-        chdir: "{{ gitlab_gitlab_dir }}"
-      environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
-      register: t_gitlab_bundle_check
+      register: t_gitlab_secrets_random
 
-    # - name: get current bundle install
-    #   command: bundle lock --print
-    #   changed_when: no
-    #   args:
-    #     chdir: "{{ gitlab_gitlab_dir }}"
-    #   environment:
-    #     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
-    #   }}/bin:{{ ansible_env['PATH'] }}"
-    #   register: t_gitlab_bundle_install_current
+    - name: set gitlab production db_key_base secret
+      set_fact:
+        gitlab_db_key_base_production: "{{ t_gitlab_secrets_random.stdout }}"
+      when: gitlab_db_key_base_production is not defined
 
-    # - name: get expected bundle install
-    #   command: cat Gemfile.lock
-    #   changed_when: no
-    #   args:
-    #     chdir: "{{ gitlab_gitlab_dir }}"
-    #   environment:
-    #     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
-    #   }}/bin:{{ ansible_env['PATH'] }}"
-    #   register: t_gitlab_bundle_install_expected
+    - name: deploy gitlab config/secrets.yml
+      template:
+        src: "gitlab/config/secrets.yml"
+        dest: "{{ gitlab_gitlab_dir }}/config/secrets.yml"
+        mode: "0600"
+        owner: "{{ gitlab_user }}"
+        group: "{{ gitlab_group }}"
+
+  when: not t_gitlab_secrets_stat.stat.exists
+
+- name: fix gitlab workdir permissions
+  file:
+    path: "{{ gitlab_gitlab_dir }}/{{ item.path }}"
+    owner: "{{ item.owner|d(gitlab_user) }}"
+    group: "{{ item.group|d(gitlab_group) }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop:
+    - { path: log, mode: '4750' }
+    - { path: tmp, mode: '4750' }
+    - { path: tmp/pids, mode: '4750' }
+    - { path: tmp/sockets, mode: '4750' }
+    - { path: public/uploads, mode: '0700' }
+    - { path: builds, mode: '4750' }
+    - { path: shared/artifacts, mode: '4750' }
+    - { path: shared/pages, mode: '6770' }
+
+
+- name: check bundle install
+  command: bundle check
+  changed_when: no
+  failed_when: no
+  args:
+    chdir: "{{ gitlab_gitlab_dir }}"
+  environment:
+    PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+  become: yes
+  become_user: "{{ gitlab_user }}"
+  register: t_gitlab_bundle_check
+
+# - name: get current bundle install
+#   command: bundle lock --print
+#   changed_when: no
+#   args:
+#     chdir: "{{ gitlab_gitlab_dir }}"
+#   environment:
+#     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+#   }}/bin:{{ ansible_env['PATH'] }}"
+#   register: t_gitlab_bundle_install_current
+
+# - name: get expected bundle install
+#   command: cat Gemfile.lock
+#   changed_when: no
+#   args:
+#     chdir: "{{ gitlab_gitlab_dir }}"
+#   environment:
+#     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
+#   }}/bin:{{ ansible_env['PATH'] }}"
+#   register: t_gitlab_bundle_install_expected
+
+- block:
+    - name: bcrypt 3.1.12 does not build on FreeBSD
+      replace:
+        path: "{{ gitlab_gitlab_dir }}/Gemfile.lock"
+        regexp: 'bcrypt \(3\.1\.12\)'
+        replace: 'bcrypt (3.1.13)'
 
     - name: bundle install
       command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without development test mysql aws kerberos"
@@ -112,8 +131,7 @@
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
         PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
-      when: t_gitlab_bundle_check.rc != 0 # or (t_gitlab_bundle_install_current.stdout != t_gitlab_bundle_install_expected.stdout)
-
 
   become: yes
   become_user: "{{ gitlab_user }}"
+  when: t_gitlab_bundle_check.rc != 0 # or (t_gitlab_bundle_install_current.stdout != t_gitlab_bundle_install_expected.stdout)

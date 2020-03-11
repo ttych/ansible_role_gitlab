@@ -22,7 +22,7 @@
 # Read about unicorn workers here:
 # http://doc.gitlab.com/ee/install/requirements.html#unicorn-workers
 #
-worker_processes {{ ansible_processor_vcpus|d(ansible_processor_count) + 1 }}
+worker_processes {{ (ansible_processor_vcpus|d(ansible_processor_count) | int) + 1 }}
 
 # Since Unicorn is never exposed to outside clients, it does not need to
 # run on the standard HTTP port (80), there is no reason to start Unicorn

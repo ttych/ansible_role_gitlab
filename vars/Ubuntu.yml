@@ -34,3 +34,4 @@ gitlab_prereq_packages:
   - postgresql-client
   - libpq-dev
   - xsltproc
+  - apg

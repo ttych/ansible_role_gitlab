@@ -23,6 +23,7 @@ gitlab_prereq_packages:
   - go
   - node
   - npm
+  - apg
 
 gitlab_make: gmake
 

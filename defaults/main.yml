@@ -44,8 +44,6 @@ gitlab_directories:
   - { path: "{{ gitlab_git_ssh_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_shell_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
-  - { path: "{{ gitlab_shell_log_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
-  - { path: "{{ gitlab_shell_hooks_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
