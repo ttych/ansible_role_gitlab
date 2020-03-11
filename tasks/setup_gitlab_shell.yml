@@ -1,0 +1,83 @@
+---
+
+- block:
+
+    # - name: install gitlab-shell
+    #   command: bundle exec rake gitlab:shell:install REDIS_URL=unix:{{ gitlab_redis_socket }} RAILS_ENV=production SKIP_STORAGE_VALIDATION=true
+    #   changed_when: no
+    #   args:
+    #     chdir: "{{ gitlab_gitlab_dir }}"
+    #   environment:
+    #     PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+
+    # in default/main.yml
+
+    - name: stat gitlab-shell bin
+      stat:
+        path: "{{ gitlab_shell_dir }}/bin/gitlab-shell"
+      register: t_gitlab_shell_bin_stat
+
+    - block:
+
+        - name: "clean {{ gitlab_shell_dir }} content"
+          shell: "rm -Rf {{ gitlab_shell_dir }}/* {{ gitlab_shell_dir }}/.??*"
+
+        - name: get required gitlab-shell version
+          command: "cat {{ gitlab_app_dir }}/GITLAB_SHELL_VERSION"
+          changed_when: no
+          register: t_gitlab_shell_version
+
+        - name: checkout gitlab-shell repository
+          git:
+            repo: "{{ gitlab_shell_repository }}"
+            dest: "{{ gitlab_shell_dir }}"
+            version: "v{{ t_gitlab_shell_version.stdout }}"
+            accept_hostkey: yes
+            umask: "022"
+            force: yes
+          register: t_gitlab_shell_checkout
+
+      when: not t_gitlab_shell_bin_stat.stat.exists
+
+    - name: setup workspace directory tree
+      file:
+        path: "{{ item.path | d(omit) }}"
+        src: "{{ item.src | d(omit) }}"
+        dest: "{{ item.dest | d(omit) }}"
+        owner: "{{ item.owner | d(omit) }}"
+        group: "{{ item.group | d(omit) }}"
+        mode: "{{ item.mode | d(omit) }}"
+        state: "{{ item.state|d('directory') }}"
+      loop: "{{ gitlab_shell_directories }}"
+
+    - name: deploy gitlab-shell config.yml
+      template:
+        src: gitlab-shell/config.yml
+        dest: "{{ gitlab_shell_dir }}/config.yml"
+        mode: "0644"
+
+    - block:
+        - name: bundle install
+          command: bundle install
+          args:
+            chdir: "{{ gitlab_shell_dir }}"
+          environment:
+            PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+
+        - name: build gitlab-shell
+          command: make build
+          args:
+            chdir: "{{ gitlab_shell_dir }}"
+          environment:
+            PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
+
+      when: not t_gitlab_shell_bin_stat.stat.exists
+
+    - name: link gitlab_shell_secret
+      file:
+        src: "{{ gitlab_gitlab_dir }}/.gitlab_shell_secret"
+        dest: "{{ gitlab_shell_dir }}/.gitlab_shell_secret"
+        state: link
+
+  become: yes
+  become_user: "{{ gitlab_user }}"

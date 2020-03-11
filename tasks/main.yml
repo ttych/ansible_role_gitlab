@@ -26,6 +26,8 @@
 
     - include: setup_gitlab.yml
 
+    - include: setup_gitlab_shell.yml
+
     # - include: service.yml
 
   when: want_gitlab

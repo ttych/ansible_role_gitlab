@@ -41,7 +41,7 @@
     - block:
         - name: generate random string
           command: makepasswd --chars 30
-          changed_when: false
+          changed_when: no
           register: t_gitlab_secrets_random
 
         - name: set gitlab production db_key_base secret
@@ -75,7 +75,6 @@
         - { path: shared/pages, mode: '6770' }
 
 
-
     - name: check bundle install
       command: bundle check
       changed_when: no
@@ -83,8 +82,7 @@
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
-      }}/bin:{{ ansible_env['PATH'] }}"
+        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
       register: t_gitlab_bundle_check
 
     # - name: get current bundle install
@@ -109,12 +107,11 @@
 
     - name: bundle install
       command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without development test mysql aws kerberos"
-      changed_when: false
+      changed_when: no
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir
-      }}/bin:{{ ansible_env['PATH'] }}"
+        PATH: "{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_git_dir }}/bin:{{ ansible_env['PATH'] }}"
       when: t_gitlab_bundle_check.rc != 0 # or (t_gitlab_bundle_install_current.stdout != t_gitlab_bundle_install_expected.stdout)
 
 
