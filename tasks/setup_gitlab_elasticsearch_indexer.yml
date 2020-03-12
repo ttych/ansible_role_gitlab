@@ -1,0 +1,18 @@
+---
+
+# - name: stat gitlab-shell bin
+#   stat:
+#     path: "{{ gitlab_workhorse_dir }}/gitlab-workhorse"
+#   register: t_gitlab_workhorse_bin_stat
+
+- block:
+    - name: install gitlab-elasticsearch-indexer
+      command: "bundle exec rake 'gitlab:indexer:install[{{ gitlab_elasticsearch_indexer_dir }}]' RAILS_ENV=production"
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_PATH }}"
+
+  become: yes
+  become_user: "{{ gitlab_user }}"
+  # when: not t_gitlab_workhorse_bin_stat.stat.exists

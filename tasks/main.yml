@@ -30,6 +30,9 @@
 
     - include: setup_gitlab_workhorse.yml
 
+    # disable, because not available in public version
+    # - include: setup_gitlab_elasticsearch_indexer.yml
+
     # - include: service.yml
 
   when: want_gitlab
