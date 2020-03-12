@@ -27,7 +27,7 @@
         state: directory
 
     - name: get required gitlab-shell version
-      command: "cat {{ gitlab_app_dir }}/GITLAB_SHELL_VERSION"
+      command: "cat {{ gitlab_gitlab_dir }}/GITLAB_SHELL_VERSION"
       changed_when: no
       register: t_gitlab_shell_version
 

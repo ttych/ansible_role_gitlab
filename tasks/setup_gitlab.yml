@@ -17,6 +17,13 @@
   become: yes
   become_user: "{{ gitlab_user }}"
 
+- name: bcrypt 3.1.12 does not build on FreeBSD
+  replace:
+    path: "{{ gitlab_gitlab_dir }}/Gemfile.lock"
+    regexp: 'bcrypt \(3\.1\.12\)'
+    replace: 'bcrypt (3.1.13)'
+  changed_when: no
+
 - name: deploy gitlab config files
   template:
     src: "{{ item.template }}"
@@ -97,6 +104,7 @@
   become_user: "{{ gitlab_user }}"
   register: t_gitlab_bundle_check
 
+
 # - name: get current bundle install
 #   command: bundle lock --print
 #   changed_when: no
@@ -116,12 +124,6 @@
 #   register: t_gitlab_bundle_install_expected
 
 - block:
-    - name: bcrypt 3.1.12 does not build on FreeBSD
-      replace:
-        path: "{{ gitlab_gitlab_dir }}/Gemfile.lock"
-        regexp: 'bcrypt \(3\.1\.12\)'
-        replace: 'bcrypt (3.1.13)'
-
     - name: bundle install
       command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without development test mysql aws kerberos"
       changed_when: no

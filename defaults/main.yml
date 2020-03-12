@@ -26,8 +26,10 @@ gitlab_domain: local
 gitlab_dir: /home/git
 gitlab_git_home: "{{ gitlab_dir }}"
 gitlab_git_ssh_dir: "{{ gitlab_git_home }}/.ssh"
-gitlab_app_dir: "{{ gitlab_dir }}/gitlab"
-gitlab_shell_dir: "{{ gitlab_dir }}/gitlab-shell"
+gitlab_app_dir: "{{ gitlab_dir }}/app"
+gitlab_gitlab_dir: "{{ gitlab_app_dir }}/gitlab"
+gitlab_shell_dir: "{{ gitlab_app_dir }}/gitlab-shell"
+gitlab_workhorse_dir: "{{ gitlab_app_dir }}/gitlab-workhorse"
 gitlab_repositories_dir: "{{ gitlab_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_dir }}/tmp"
@@ -44,7 +46,6 @@ gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_git_ssh_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
-  - { path: "{{ gitlab_shell_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
@@ -92,7 +93,6 @@ gitlab_git_configs:
   - { option: receive.advertisePushOptions, value: "true" }
   - { option: core.fsyncObjectFiles, value: "true" }
 
-gitlab_gitlab_dir: "{{ gitlab_app_dir }}"
 gitlab_gitlab_version: 12-8-stable
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
 gitlab_gitlab_port: 3125
@@ -108,6 +108,9 @@ gitlab_shell_directories:
   - { path: "{{ gitlab_shell_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_shell_log_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
   - { path: "{{ gitlab_shell_hooks_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+
+
+
 
 # FIXME: gitlab.yml -> elasticsearch
 # FIXME: https

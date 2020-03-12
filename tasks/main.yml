@@ -28,6 +28,8 @@
 
     - include: setup_gitlab_shell.yml
 
+    - include: setup_gitlab_workhorse.yml
+
     # - include: service.yml
 
   when: want_gitlab

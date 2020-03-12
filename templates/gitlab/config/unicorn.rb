@@ -33,12 +33,12 @@ worker_processes {{ (ansible_processor_vcpus|d(ansible_processor_count) | int) +
 
 # Help ensure your application will always spawn in the symlinked
 # "current" directory that Capistrano sets up.
-working_directory "{{ gitlab_app_dir }}" # available in 0.94.0+
+working_directory "{{ gitlab_gitlab_dir }}" # available in 0.94.0+
 
 # Listen on both a Unix domain socket and a TCP port.
 # If you are load-balancing multiple Unicorn masters, lower the backlog
 # setting to e.g. 64 for faster failover.
-listen "{{ gitlab_app_dir }}/tmp/sockets/gitlab.socket", :backlog => 1024
+listen "{{ gitlab_gitlab_dir }}/tmp/sockets/gitlab.socket", :backlog => 1024
 listen "127.0.0.1:{{ gitlab_gitlab_port }}", :tcp_nopush => true
 
 # nuke workers after 30 seconds instead of 60 seconds (the default)
@@ -59,13 +59,13 @@ listen "127.0.0.1:{{ gitlab_gitlab_port }}", :tcp_nopush => true
 timeout 60
 
 # feel free to point this anywhere accessible on the filesystem
-pid "{{ gitlab_app_dir }}/tmp/pids/unicorn.pid"
+pid "{{ gitlab_gitlab_dir }}/tmp/pids/unicorn.pid"
 
 # By default, the Unicorn logger will write to stderr.
 # Additionally, some applications/frameworks log to stderr or stdout,
 # so prevent them from going to /dev/null when daemonized here:
-stderr_path "{{ gitlab_app_dir }}/log/unicorn.stderr.log"
-stdout_path "{{ gitlab_app_dir }}/log/unicorn.stdout.log"
+stderr_path "{{ gitlab_gitlab_dir }}/log/unicorn.stderr.log"
+stdout_path "{{ gitlab_gitlab_dir }}/log/unicorn.stdout.log"
 
 # Save memory by sharing the application code among multiple Unicorn workers
 # with "preload_app true". See:
@@ -81,8 +81,8 @@ preload_app true
 # fast LAN.
 check_client_connection false
 
-require_relative "{{ gitlab_app_dir }}/lib/gitlab/cluster/lifecycle_events"
-require_relative "{{ gitlab_app_dir }}/lib/gitlab/log_timestamp_formatter.rb"
+require_relative "{{ gitlab_gitlab_dir }}/lib/gitlab/cluster/lifecycle_events"
+require_relative "{{ gitlab_gitlab_dir }}/lib/gitlab/log_timestamp_formatter.rb"
 
 before_exec do |server|
   # Signal application hooks that we're about to restart
