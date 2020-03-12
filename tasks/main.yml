@@ -35,6 +35,8 @@
 
     - include: setup_gitlab_pages.yml
 
+    - include: setup_gitaly.yml
+
     # - include: service.yml
 
   when: want_gitlab

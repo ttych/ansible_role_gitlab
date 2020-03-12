@@ -1,0 +1,66 @@
+---
+
+- name: stat gitaly bin
+  stat:
+    path: "{{ gitlab_gitaly_dir }}/gitaly"
+  register: t_gitlab_gitaly_bin_stat
+
+
+- block:
+    - name: install gitaly
+      command: "bundle exec rake 'gitlab:gitaly:install[{{ gitlab_gitaly_dir }} ,{{ gitlab_repositories_dir }} ]' RAILS_ENV=production"
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_PATH }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
+
+  when: not t_gitlab_gitaly_bin_stat.stat.exists
+
+- name: deploy gitaly config.toml
+  template:
+    src: "gitaly/{{ item.name }}"
+    dest: "{{ gitlab_gitaly_dir }}/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ gitlab_user }}"
+    group: "{{ gitlab_group }}"
+  loop:
+    - { name: config.toml, mode: "0644" }
+  register: t_gitlab_gitaly_conf
+
+
+- name: setup daemontools for gitaly
+  block:
+    - name: create gitaly daemontools workspace
+      file:
+        path: "{{ gitlab_daemontools_dir }}/gitaly/{{ item.path }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+        state: directory
+      loop: "{{ gitlab_daemontools_directories_template }}"
+
+    - name: deploy gitaly daemontools run scripts
+      template:
+        src: "svscan/gitaly/{{ item.path }}"
+        dest: "{{ gitlab_daemontools_dir }}/gitaly/{{ item.path }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+      loop: "{{ gitlab_daemontools_scripts_template }}"
+
+    - name: link as gitlab_gitaly daemontools service
+      file:
+        src: "{{ gitlab_daemontools_dir }}/gitaly"
+        dest: "{{ daemontools_svscan_dir }}/gitlab_gitaly"
+        state: link
+
+  when: has_daemontools|d(false)
+
+
+- name: setup standard system service for gitaly
+  fail:
+    msg: "not implemented"
+
+  when: not has_daemontools|d(false)

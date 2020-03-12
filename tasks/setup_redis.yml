@@ -10,7 +10,7 @@
 
 - name: setup daemontools for redis
   block:
-    - name: create gitlab service directory tree
+    - name: create redis daemontools workspace
       file:
         path: "{{ gitlab_daemontools_dir }}/redis/{{ item.path }}"
         owner: "{{ item.owner }}"
@@ -19,7 +19,8 @@
         state: directory
       loop: "{{ gitlab_daemontools_directories_template }}"
 
-    - template:
+    - name: deploy redis daemontools run scripts
+      template:
         src: "svscan/redis/{{ item.path }}"
         dest: "{{ gitlab_daemontools_dir }}/redis/{{ item.path }}"
         owner: "{{ item.owner }}"
@@ -27,7 +28,7 @@
         mode: "{{ item.mode }}"
       loop: "{{ gitlab_daemontools_scripts_template }}"
 
-    - name: link daemontools
+    - name: link as gitlab_redis daemontools service
       file:
         src: "{{ gitlab_daemontools_dir }}/redis"
         dest: "{{ daemontools_svscan_dir }}/gitlab_redis"
@@ -36,7 +37,7 @@
   when: has_daemontools|d(false)
 
 
-- name: setup system standard service for redis
+- name: setup standard system service for redis
   fail:
     msg: "not implemented"
 

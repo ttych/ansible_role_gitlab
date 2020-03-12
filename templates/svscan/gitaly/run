@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec 2>&1
+exec setuidgid "{{ gitlab_user }}" \
+     "{{ gitlab_gitaly_dir }}/gitaly" "{{ gitlab_gitaly_dir }}/config.toml"

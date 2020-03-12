@@ -32,6 +32,7 @@ gitlab_shell_dir: "{{ gitlab_app_dir }}/gitlab-shell"
 gitlab_workhorse_dir: "{{ gitlab_app_dir }}/gitlab-workhorse"
 gitlab_elasticsearch_indexer_dir: "{{ gitlab_app_dir }}/gitlab-elasticsearch-indexer"
 gitlab_pages_dir: "{{ gitlab_app_dir }}/gitlab_pages"
+gitlab_gitaly_dir: "{{ gitlab_app_dir }}/gitaly"
 gitlab_repositories_dir: "{{ gitlab_app_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_app_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_app_dir }}/tmp"
@@ -47,11 +48,12 @@ gitlab_tools_gmake_dir: "{{ gitlab_tools_dir }}/gmake"
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_git_ssh_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
-  - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0750" }
+  - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_run_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
 
 gitlab_git_version: 2.25.1
 gitlab_git_release: "git-{{ gitlab_git_version }}"
@@ -99,7 +101,7 @@ gitlab_gitlab_version: 12-8-stable
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
 gitlab_gitlab_port: 3125
 
-gitlab_gitaly_socket: "{{ gitlab_run_dir }}/gitaly.socket"
+gitlab_gitaly_socket: "{{ gitlab_gitlab_dir }}/tmp/sockets/private/gitaly.socket"
 
 gitlab_shell_repository: "https://gitlab.com/gitlab-org/gitlab-shell.git"
 gitlab_shell_log_dir: "{{ gitlab_shell_dir }}/log"

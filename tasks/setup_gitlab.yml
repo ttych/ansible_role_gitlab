@@ -86,6 +86,7 @@
     - { path: tmp, mode: '4750' }
     - { path: tmp/pids, mode: '4750' }
     - { path: tmp/sockets, mode: '4750' }
+    - { path: tmp/sockets/private, mode: '0700' }
     - { path: public/uploads, mode: '0700' }
     - { path: builds, mode: '4750' }
     - { path: shared/artifacts, mode: '4750' }
