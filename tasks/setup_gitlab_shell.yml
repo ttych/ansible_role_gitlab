@@ -46,7 +46,7 @@
   when: not t_gitlab_shell_bin_stat.stat.exists
 
 
-- name: setup workspace directory tree
+- name: setup gitlab-shell workspace
   file:
     path: "{{ item.path | d(omit) }}"
     src: "{{ item.src | d(omit) }}"
