@@ -54,15 +54,43 @@
   register: t_gitlab_secrets_stat
 
 - block:
-    - name: generate random string
-      command: apg -m 30 -n 1
-      changed_when: no
-      register: t_gitlab_secrets_random
 
-    - name: set gitlab production db_key_base secret
-      set_fact:
-        gitlab_db_key_base_production: "{{ t_gitlab_secrets_random.stdout }}"
-      when: gitlab_db_key_base_production is not defined
+    - name: stat db_key_base
+      stat:
+        path: "{{ gitlab_gitlab_db_key_base_production_file }}"
+      register: t_gitlab_db_key_base_stat
+
+    - block:
+        - name: reload db_key_base
+          slurp:
+            src: "{{ gitlab_gitlab_db_key_base_production_file }}"
+          register: t_gitlab_db_key_base_content
+
+        - name: set t_gitlab_db_key_base
+          set_fact:
+            gitlab_db_key_base_production: "{{ t_gitlab_db_key_base_content['content'] | b64decode }}"
+
+      when: t_gitlab_db_key_base_stat.stat.exists
+
+    - block:
+        - name: generate random string
+          command: apg -m 30 -n 1
+          changed_when: no
+          register: t_gitlab_db_key_base_random
+
+        - name: set t_gitlab_db_key_base
+          set_fact:
+            gitlab_db_key_base_production: "{{ t_gitlab_db_key_base_random.stdout }}"
+
+        - name: save db_key_base
+          copy:
+            content: "{{ gitlab_db_key_base_production }}"
+            dest: "{{ gitlab_gitlab_db_key_base_production_file }}"
+            mode: "0600"
+            owner: "{{ gitlab_user }}"
+            group: "{{ gitlab_group }}"
+
+      when: not t_gitlab_db_key_base_stat.stat.exists
 
     - name: deploy gitlab config/secrets.yml
       template:
@@ -105,24 +133,6 @@
   become_user: "{{ gitlab_user }}"
   register: t_gitlab_bundle_check
 
-
-# - name: get current bundle install
-#   command: bundle lock --print
-#   changed_when: no
-#   args:
-#     chdir: "{{ gitlab_gitlab_dir }}"
-#   environment:
-#     PATH: "{{ gitlab_build_PATH }}"
-#   register: t_gitlab_bundle_install_current
-
-# - name: get expected bundle install
-#   command: cat Gemfile.lock
-#   changed_when: no
-#   args:
-#     chdir: "{{ gitlab_gitlab_dir }}"
-#   environment:
-#     PATH: "{{ gitlab_build_PATH }}"
-#   register: t_gitlab_bundle_install_expected
 
 - block:
     - name: bundle install

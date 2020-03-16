@@ -9,13 +9,13 @@
 - block:
     - name: stat root password file
       stat:
-        path: "{{ gitlab_git_home }}/.root_password"
+        path: "{{ gitlab_gitlab_root_password_file }}"
       register: t_gitlab_setup_root_password_stat
 
     - block:
         - name: reload root password
           slurp:
-            src: "{{ gitlab_git_home }}/.root_password"
+            src: "{{ gitlab_gitlab_root_password_file }}"
           register: t_gitlab_setup_root_password
 
         - name: set gitlab_setup_root_password
@@ -36,7 +36,7 @@
         - name: save root password
           copy:
             content: "{{ gitlab_setup_root_password }}"
-            dest: "{{ gitlab_git_home }}/.root_password"
+            dest: "{{ gitlab_gitlab_root_password_file }}"
             mode: "0600"
             owner: "{{ gitlab_user }}"
             group: "{{ gitlab_group }}"
