@@ -26,7 +26,7 @@
       failed_when: false
       register: t_gitlab_git_pcre2_dep
 
-    - name: "set install Git to {{ not gitlab_git_version_valid or (t_gitlab_git_pcre2_dep.rc != 0) }}"
+    - name: "set t_gitlab_git_install fact"
       set_fact:
         t_gitlab_git_install: "{{ not gitlab_git_version_valid or (t_gitlab_git_pcre2_dep.rc != 0) }}"
 
@@ -40,6 +40,7 @@
         url: "{{ gitlab_git_url }}"
         dest: "{{ gitlab_distfiles_dir }}/{{ gitlab_git_archive }}"
         mode: "0644"
+        # validate_certs: no
 
     - name: "extract archive"
       unarchive:
@@ -53,7 +54,7 @@
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_git_release }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
         CPPFLAGS: "{{ gitlab_CPPFLAGS | default('') }}"
         LDFLAGS: "{{ gitlab_LDFLAGS | default('') }}"
 

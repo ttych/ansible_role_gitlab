@@ -10,6 +10,7 @@
       file:
         path: "{{ gitlab_pages_dir }}"
         state: absent
+        force: yes
 
     - name: get required gitlab-pages version
       command: "cat {{ gitlab_gitlab_dir }}/GITLAB_PAGES_VERSION"
@@ -24,15 +25,51 @@
         accept_hostkey: yes
         umask: "022"
         force: yes
+      become: yes
+      become_user: "{{ gitlab_user }}"
       register: t_gitlab_pages_checkout
+
+    - block:
+        - name: have FreeBSD patch directory
+          file:
+            path: "{{ gitlab_distfiles_dir }}/gitlab-pages_patches"
+            owner: "{{ gitlab_user }}"
+            group: "{{ gitlab_group }}"
+            mode: "0755"
+            state: directory
+
+        - name: deploy FreeBSD patches
+          copy:
+            src: "gitlab-pages/FreeBSD_patch/{{ item }}"
+            dest: "{{ gitlab_distfiles_dir }}/gitlab-pages_patches/{{ item }}"
+            owner: "{{ gitlab_user }}"
+            group: "{{ gitlab_group }}"
+            mode: "0644"
+          loop:
+            - patch-internal_jail_jail.go
+            - patch-vendor_github.com_karrick_godirwalk_dirent__fileno.go
+            - patch-vendor_github.com_karrick_godirwalk_dirent__ino.go
+
+        - name: apply FreeBSD patches
+          shell: "patch -p0 <{{ gitlab_distfiles_dir }}/gitlab-pages_patches/{{ item }}"
+          args:
+            chdir: "{{ gitlab_pages_dir }}"
+          loop:
+            - patch-internal_jail_jail.go
+            - patch-vendor_github.com_karrick_godirwalk_dirent__fileno.go
+            - patch-vendor_github.com_karrick_godirwalk_dirent__ino.go
+          become: yes
+          become_user: "{{ gitlab_user }}"
+
+      when: ansible_system == 'FreeBSD'
 
     - name: build gitlab-pages
       command: "make -j {{ ansible_processor_vcpus|d(ansible_processor_count) }}"
       args:
         chdir: "{{ gitlab_pages_dir }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
 
-  become: yes
-  become_user: "{{ gitlab_user }}"
   when: not t_gitlab_pages_bin_stat.stat.exists

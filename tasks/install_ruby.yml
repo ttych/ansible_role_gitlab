@@ -5,7 +5,7 @@
     path: "{{ gitlab_tools_ruby_dir }}/bin/ruby"
   register: t_gitlab_ruby_bin
 
-- name: "set install Ruby to {{ not t_gitlab_ruby_bin.stat.exists }}"
+- name: set install Ruby flag
   set_fact:
     t_gitlab_ruby_install: "{{ not t_gitlab_ruby_bin.stat.exists }}"
 
@@ -47,7 +47,7 @@
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_ruby_release }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
         CPPFLAGS: "{{ gitlab_CPPFLAGS | default('') }}"
         LDFLAGS: "{{ gitlab_LDFLAGS | default('') }}"
 

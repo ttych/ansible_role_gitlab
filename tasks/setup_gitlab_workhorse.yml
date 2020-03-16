@@ -11,7 +11,7 @@
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
 
   become: yes
   become_user: "{{ gitlab_user }}"

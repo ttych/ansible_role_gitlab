@@ -8,11 +8,11 @@
 
 - block:
     - name: install gitaly
-      command: "bundle exec rake 'gitlab:gitaly:install[{{ gitlab_gitaly_dir }} ,{{ gitlab_repositories_dir }} ]' RAILS_ENV=production"
+      shell: "bundle exec rake 'gitlab:gitaly:install[{{ gitlab_gitaly_dir }},{{ gitlab_repositories_dir }}]' RAILS_ENV=production"
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
       become: yes
       become_user: "{{ gitlab_user }}"
 

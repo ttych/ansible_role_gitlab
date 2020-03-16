@@ -12,7 +12,6 @@ gitlab_users:
     group: git
     groups:
     home: "{{ gitlab_git_home|default('/home/git') }}"
-    create_home: false
     shell: /usr/sbin/nologin
     uid: 3125
     home_mode: '0700'
@@ -22,6 +21,7 @@ gitlab_groups:
   - { name: git, gid: 3125 }
 
 gitlab_domain: local
+gitlab_root_email: "git@{{ gitlab_domain }}"
 
 gitlab_dir: /home/git
 gitlab_git_home: "{{ gitlab_dir }}"
@@ -31,7 +31,7 @@ gitlab_gitlab_dir: "{{ gitlab_app_dir }}/gitlab"
 gitlab_shell_dir: "{{ gitlab_app_dir }}/gitlab-shell"
 gitlab_workhorse_dir: "{{ gitlab_app_dir }}/gitlab-workhorse"
 gitlab_elasticsearch_indexer_dir: "{{ gitlab_app_dir }}/gitlab-elasticsearch-indexer"
-gitlab_pages_dir: "{{ gitlab_app_dir }}/gitlab_pages"
+gitlab_pages_dir: "{{ gitlab_app_dir }}/gitlab-pages"
 gitlab_gitaly_dir: "{{ gitlab_app_dir }}/gitaly"
 gitlab_repositories_dir: "{{ gitlab_app_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_app_dir }}/distfiles"
@@ -44,6 +44,11 @@ gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
 gitlab_tools_go_dir: "{{ gitlab_tools_dir }}/go"
 gitlab_tools_redis_dir: "{{ gitlab_tools_dir }}/redis"
 gitlab_tools_gmake_dir: "{{ gitlab_tools_dir }}/gmake"
+
+gitlab_tools_PATH: "{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_go_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ gitlab_tools_gmake_dir }}/bin"
+gitlab_gitlab_PATH: "{{ gitlab_shell_dir }}/bin:{{ gitlab_workhorse_dir }}:{{ gitlab_pages_dir }}/bin:{{ gitlab_gitaly_dir }}"
+gitlab_build_PATH: "{{ gitlab_tools_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
+gitlab_full_PATH: "{{ gitlab_tools_PATH }}:{{ gitlab_gitlab_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 
 gitlab_directories:
   - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
@@ -97,7 +102,7 @@ gitlab_git_configs:
   - { option: receive.advertisePushOptions, value: "true" }
   - { option: core.fsyncObjectFiles, value: "true" }
 
-gitlab_gitlab_version: 12-8-stable
+gitlab_gitlab_version: v12.8.6  # v11.11.8
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
 gitlab_gitlab_port: 3125
 
@@ -114,6 +119,7 @@ gitlab_shell_directories:
   - { path: "{{ gitlab_shell_hooks_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
 
 gitlab_pages_repository: https://gitlab.com/gitlab-org/gitlab-pages.git
+
 
 
 # FIXME: gitlab.yml -> elasticsearch

@@ -30,7 +30,7 @@
       args:
         chdir: "{{ gitlab_tmp_dir }}/{{ gitlab_redis_release }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
         CPPFLAGS: "{{ gitlab_CPPFLAGS | default('') }}"
         LDFLAGS: "{{ gitlab_LDFLAGS | default('') }}"
 

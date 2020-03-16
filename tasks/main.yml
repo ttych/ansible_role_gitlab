@@ -18,7 +18,7 @@
 
     - include: install.yml
 
-    # - include: setup_db.yml
+    - include: setup_db.yml
 
     - include: setup_redis.yml
 
@@ -36,6 +36,8 @@
     - include: setup_gitlab_pages.yml
 
     - include: setup_gitaly.yml
+
+    - include: setup_gitlab_postinstall.yml
 
     # - include: service.yml
 

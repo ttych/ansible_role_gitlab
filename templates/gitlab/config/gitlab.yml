@@ -930,7 +930,7 @@ production: &base
   # Gitaly settings
   gitaly:
     # Path to the directory containing Gitaly client executables.
-    client_path: /home/git/gitaly
+    client_path: {{ gitlab_gitaly_dir }}
     # Default Gitaly authentication token. Can be overridden per storage. Can
     # be left blank when Gitaly is running locally on a Unix socket, which
     # is the normal way to deploy Gitaly.
@@ -949,7 +949,7 @@ production: &base
     storages: # You must have at least a `default` storage path.
       default:
         path: {{ gitlab_repositories_dir }}
-        gitaly_address: unix:{{ gitlab_gitlab_dir }}/tmp/sockets/private/gitaly.socket # TCP connections are supported too (e.g. tcp://host:port). TLS connections are also supported using the system certificate pool (eg: tls://host:port).
+        gitaly_address: unix:{{ gitlab_gitaly_socket }} # TCP connections are supported too (e.g. tcp://host:port). TLS connections are also supported using the system certificate pool (eg: tls://host:port).
         # gitaly_token: 'special token' # Optional: override global gitaly.token for this storage.
 
   ## Backup settings

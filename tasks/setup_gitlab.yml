@@ -100,7 +100,7 @@
   args:
     chdir: "{{ gitlab_gitlab_dir }}"
   environment:
-    PATH: "{{ gitlab_PATH }}"
+    PATH: "{{ gitlab_build_PATH }}"
   become: yes
   become_user: "{{ gitlab_user }}"
   register: t_gitlab_bundle_check
@@ -112,7 +112,7 @@
 #   args:
 #     chdir: "{{ gitlab_gitlab_dir }}"
 #   environment:
-#     PATH: "{{ gitlab_PATH }}"
+#     PATH: "{{ gitlab_build_PATH }}"
 #   register: t_gitlab_bundle_install_current
 
 # - name: get expected bundle install
@@ -121,17 +121,17 @@
 #   args:
 #     chdir: "{{ gitlab_gitlab_dir }}"
 #   environment:
-#     PATH: "{{ gitlab_PATH }}"
+#     PATH: "{{ gitlab_build_PATH }}"
 #   register: t_gitlab_bundle_install_expected
 
 - block:
     - name: bundle install
-      command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without development test mysql aws kerberos"
+      command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }} --deployment --without mysql aws kerberos"
       changed_when: no
       args:
         chdir: "{{ gitlab_gitlab_dir }}"
       environment:
-        PATH: "{{ gitlab_PATH }}"
+        PATH: "{{ gitlab_build_PATH }}"
 
   become: yes
   become_user: "{{ gitlab_user }}"
