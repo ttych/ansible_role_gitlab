@@ -1,7 +1,9 @@
 #!/bin/sh
 
-export PATH="{{ gitlab_build_PATH }}:$PATH"
+export PATH="{{ gitlab_tools_PATH }}:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
 
 exec 2>&1
+
 exec setuidgid "{{ gitlab_user }}" \
+     env HOME="$APP_USER_HOME" \
      "{{ gitlab_gitaly_dir }}/gitaly" "{{ gitlab_gitaly_dir }}/config.toml"

@@ -39,7 +39,7 @@
 
     - include: setup_gitlab_postinstall.yml
 
-    # - include: service.yml
+    - include: setup_gitlab_services.yml
 
   when: want_gitlab
 

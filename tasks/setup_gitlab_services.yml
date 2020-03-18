@@ -1,0 +1,42 @@
+---
+
+- name: setup daemontools services
+  block:
+    - name: create daemontools workspaces
+      file:
+        path: "{{ gitlab_daemontools_dir }}/{{ item[0] }}/{{ item[1].path }}"
+        owner: "{{ item[1].owner }}"
+        group: "{{ item[1].group }}"
+        mode: "{{ item[1].mode }}"
+        state: directory
+      with_nested:
+        - "{{ gitlab_services }}"
+        - "{{ gitlab_daemontools_directories_template }}"
+
+    - name: deploy daemontools run scripts
+      template:
+        src: "svscan/{{ item[0] }}/{{ item[1].path }}"
+        dest: "{{ gitlab_daemontools_dir }}/{{ item[0] }}/{{ item[1].path }}"
+        owner: "{{ item[1].owner }}"
+        group: "{{ item[1].group }}"
+        mode: "{{ item[1].mode }}"
+      with_nested:
+        - "{{ gitlab_services }}"
+        - "{{ gitlab_daemontools_scripts_template }}"
+
+    - name: supervise (link) daemontools service
+      file:
+        src: "{{ gitlab_daemontools_dir }}/{{ item }}"
+        dest: "{{ daemontools_svscan_dir }}/gitlab_{{ item }}"
+        state: link
+      loop: "{{ gitlab_services }}"
+
+  when: has_daemontools|d(false)
+
+
+- name: start standard service
+  block:
+    - fail:
+        msg: "not implemented"
+
+  when: not has_daemontools|d(false)
