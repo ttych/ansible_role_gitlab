@@ -1,0 +1,32 @@
+#!/bin/sh
+
+export PATH="{{ gitlab_tools_PATH }}:{{ gitlab_gitlab_PATH }}:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
+
+exec 2>&1
+
+APP_USER="{{ gitlab_user }}"
+APP_USER_HOME="{{ gitlab_git_home }}"
+APP_ROOT="{{ gitlab_gitlab_dir }}"
+APP_SOCKET="{{ gitlab_gitlab_socket }}"
+APP_AUTH_BACKEND="{{ gitlab_gitlab_auth_backend }}"
+WORKHORSE_TCP="{{ gitlab_workhorse_tcp }}"
+WORKHORSE_TCP_ADDR="{{ gitlab_workhorse_tcp_addr }}"
+WORKHORSE_SOCKET="{{ gitlab_workhorse_socket }}"
+
+set -e
+
+cd "$APP_ROOT"
+
+workhorse_args=
+case "$WORKHORSE_TCP" in
+    [Yy][Ee][Ss])
+        workhorse_args="-listenNetwork tcp -listenAddr $WORKHORSE_TCP_ADDR"
+        ;;
+    [Nn][Oo]|*)
+        workhorse_args="-listenNetwork unix -listenAddr $WORKHORSE_SOCKET"
+        ;;
+esac
+workhorse_args="-listenUmask 0 $workhorse_args -authBackend $APP_AUTH_BACKEND -authSocket $APP_SOCKET -documentRoot $APP_ROOT/public"
+
+exec setuidgid "$APP_USER" \
+     "{{ gitlab_workhorse_dir }}/gitlab-workhorse" $workhorse_args
