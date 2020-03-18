@@ -1,0 +1,18 @@
+#!/bin/sh
+
+export PATH="{{ gitlab_tools_PATH }}:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
+
+exec 2>&1
+
+APP_USER="{{ gitlab_user }}"
+APP_USER_HOME="{{ gitlab_git_home }}"
+APP_ROOT="{{ gitlab_gitlab_dir }}"
+APP_ENV=production
+
+set -e
+
+cd "$APP_ROOT"
+
+exec setuidgid "$APP_USER" \
+     env RAILS_ENV="$APP_ENV" HOME="$APP_USER_HOME" \
+     "$APP_ROOT/bin/mail_room" start

@@ -135,10 +135,9 @@ gitlab_services:
   - gitlab
   - sidekiq
   - workhorse
+  - pages
   # - mailroom
-  # - pages
 
 
 # FIXME: gitlab.yml -> elasticsearch
 # FIXME: https
-

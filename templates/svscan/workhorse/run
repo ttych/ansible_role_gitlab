@@ -29,4 +29,5 @@ esac
 workhorse_args="-listenUmask 0 $workhorse_args -authBackend $APP_AUTH_BACKEND -authSocket $APP_SOCKET -documentRoot $APP_ROOT/public"
 
 exec setuidgid "$APP_USER" \
+     env HOME="$APP_USER_HOME" \
      "{{ gitlab_workhorse_dir }}/gitlab-workhorse" $workhorse_args
