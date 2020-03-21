@@ -22,6 +22,7 @@ gitlab_groups:
 
 gitlab_domain: local
 gitlab_root_email: "git@{{ gitlab_domain }}"
+gitlab_fqdn: "gitlab.{{ gitlab_domain }}"
 
 gitlab_dir: /home/git
 gitlab_git_home: "{{ gitlab_dir }}"
@@ -37,6 +38,7 @@ gitlab_repositories_dir: "{{ gitlab_app_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_app_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_app_dir }}/tmp"
 gitlab_etc_dir: "{{ gitlab_app_dir }}/etc"
+gitlab_bin_dir: "{{ gitlab_app_dir }}/bin"
 gitlab_run_dir: "{{ gitlab_app_dir }}/run"
 gitlab_tools_dir: "{{ gitlab_app_dir }}/tools"
 gitlab_tools_git_dir: "{{ gitlab_tools_dir }}/git"
@@ -51,12 +53,13 @@ gitlab_build_PATH: "{{ gitlab_tools_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:
 gitlab_full_PATH: "{{ gitlab_tools_PATH }}:{{ gitlab_gitlab_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 
 gitlab_directories:
-  - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
+  - { path: "{{ gitlab_git_home }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0711" }
   - { path: "{{ gitlab_git_ssh_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
-  - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
+  - { path: "{{ gitlab_app_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0711" }
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_bin_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_run_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
 
@@ -128,7 +131,8 @@ gitlab_pages_repository: https://gitlab.com/gitlab-org/gitlab-pages.git
 
 gitlab_workhorse_tcp: no
 gitlab_workhorse_tcp_addr: 127.0.0.1:8181
-gitlab_workhorse_socket: "{{ gitlab_gitlab_sockets_dir }}/gitlab-workhorse.socket"
+# gitlab_workhorse_socket: "{{ gitlab_gitlab_sockets_dir }}/gitlab-workhorse.socket"
+gitlab_workhorse_socket: "{{ gitlab_run_dir }}/gitlab-workhorse.socket"
 
 gitlab_services:
   - gitaly

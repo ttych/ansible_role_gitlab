@@ -1,0 +1,18 @@
+---
+
+- block:
+    - name: deploy gitlab to sites-available
+      template:
+        src: nginx/gitlab
+        dest: "{{ nginx_sites_available }}/gitlab"
+        mode: "0644"
+        owner: root
+        group: 0
+
+    - name: link gitlab to sites_enabled
+      file:
+        src: "{{ nginx_sites_available }}/gitlab"
+        dest: "{{ nginx_sites_enabled }}/gitlab"
+        state: link
+
+  when: has_nginx
