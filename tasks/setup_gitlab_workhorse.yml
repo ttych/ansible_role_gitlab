@@ -1,11 +1,35 @@
 ---
 
-- name: stat gitlab-shell bin
+- name: get required gitlab-workhorse version
+  command: "cat {{ gitlab_gitlab_dir }}/GITLAB_WORKHORSE_VERSION"
+  changed_when: no
+  register: t_gitlab_workhorse_version
+
+- name: stat gitlab-workhorse bin
   stat:
     path: "{{ gitlab_workhorse_dir }}/gitlab-workhorse"
-  register: t_gitlab_workhorse_bin_stat
+  register: t_gitlab_workhorse_bin
 
 - block:
+    - name: get current gitlab-workhorse version
+      command: "{{ gitlab_workhorse_dir }}/gitlab-workhorse --version"
+      changed_when: no
+      register: t_gitlab_workhorse_version_current
+
+    - name: set gitlab-workhorse version status
+      set_fact:
+        t_gitlab_workhorse_version_status: no
+      when: '("gitlab-workhorse v" + t_gitlab_workhorse_version.stdout) not in t_gitlab_workhorse_version_current.stdout'
+
+  when: t_gitlab_workhorse_bin.stat.exists
+
+
+- block:
+    - name: clean
+      file:
+        path: "{{ gitlab_workhorse_dir }}"
+        state: absent
+
     - name: install gitlab-workhorse
       command: "bundle exec rake 'gitlab:workhorse:install[{{ gitlab_workhorse_dir }}]' RAILS_ENV=production"
       args:
@@ -15,4 +39,4 @@
 
   become: yes
   become_user: "{{ gitlab_user }}"
-  when: not t_gitlab_workhorse_bin_stat.stat.exists
+  when: not t_gitlab_workhorse_bin.stat.exists or not (t_gitlab_workhorse_version_status|d(True))
