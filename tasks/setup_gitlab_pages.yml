@@ -1,33 +1,49 @@
 ---
 
+- name: get required gitlab-pages version
+  command: "cat {{ gitlab_gitlab_dir }}/GITLAB_PAGES_VERSION"
+  changed_when: no
+  register: t_gitlab_pages_version
+
+- name: checkout gitlab-pages repository
+  git:
+    repo: "{{ gitlab_pages_repository }}"
+    dest: "{{ gitlab_pages_dir }}"
+    version: "v{{ t_gitlab_pages_version.stdout }}"
+    accept_hostkey: yes
+    umask: "022"
+    force: yes
+  become: yes
+  become_user: "{{ gitlab_user }}"
+  register: t_gitlab_pages_checkout
+
 - name: stat gitlab-pages bin
   stat:
     path: "{{ gitlab_pages_dir }}/bin/gitlab-pages"
-  register: t_gitlab_pages_bin_stat
+  register: t_gitlab_pages_bin
 
 - block:
-    - name: clean gitlab-pages dir
-      file:
-        path: "{{ gitlab_pages_dir }}"
-        state: absent
-        force: yes
-
-    - name: get required gitlab-pages version
-      command: "cat {{ gitlab_gitlab_dir }}/GITLAB_PAGES_VERSION"
+    - name: get current gitlab-pages version
+      command: "{{ gitlab_pages_dir }}/bin/gitlab-pages --version"
       changed_when: no
-      register: t_gitlab_pages_version
+      register: t_gitlab_pages_version_current
 
-    - name: checkout gitlab-pages repository
-      git:
-        repo: "{{ gitlab_pages_repository }}"
-        dest: "{{ gitlab_pages_dir }}"
-        version: "v{{ t_gitlab_pages_version.stdout }}"
-        accept_hostkey: yes
-        umask: "022"
-        force: yes
-      become: yes
-      become_user: "{{ gitlab_user }}"
-      register: t_gitlab_pages_checkout
+    - name: set gitlab-pages version status
+      set_fact:
+        t_gitlab_pages_version_status: no
+      when: t_gitlab_pages_version.stdout != t_gitlab_pages_version_current.stdout
+
+  when: t_gitlab_pages_bin.stat.exists
+
+
+- block:
+    - name: clean
+      command: "git clean -fx"
+      args:
+        chdir: "{{ gitlab_pages_dir }}"
+      environment:
+        PATH: "{{ gitlab_build_PATH }}"
+
 
     - block:
         - name: have FreeBSD patch directory
@@ -63,6 +79,7 @@
 
       when: ansible_system == 'FreeBSD'
 
+
     - name: build gitlab-pages
       command: "make -j {{ ansible_processor_vcpus|d(ansible_processor_count) }}"
       args:
@@ -72,4 +89,4 @@
       become: yes
       become_user: "{{ gitlab_user }}"
 
-  when: not t_gitlab_pages_bin_stat.stat.exists
+  when: not t_gitlab_pages_bin.stat.exists or not (t_gitlab_pages_version_status|d(True))

@@ -18,9 +18,9 @@
     accept_hostkey: yes
     umask: "022"
     force: yes
-  register: t_gitlab_shell_checkout
   become: yes
   become_user: "{{ gitlab_user }}"
+  register: t_gitlab_shell_checkout
 
 - name: stat gitlab-shell bin
   stat:

@@ -23,6 +23,7 @@
     regexp: 'bcrypt \(3\.1\.12\)'
     replace: 'bcrypt (3.1.13)'
   changed_when: no
+  when: ansible_system == 'FreeBSD'
 
 - name: deploy gitlab config files
   template:
