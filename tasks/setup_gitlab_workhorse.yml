@@ -18,8 +18,8 @@
 
     - name: set gitlab-workhorse version status
       set_fact:
-        t_gitlab_workhorse_version_status: no
-      when: '("gitlab-workhorse v" + t_gitlab_workhorse_version.stdout) not in t_gitlab_workhorse_version_current.stdout'
+        t_gitlab_workhorse_version_status: yes
+      when: '("gitlab-workhorse v" + t_gitlab_workhorse_version.stdout) in t_gitlab_workhorse_version_current.stdout'
 
   when: t_gitlab_workhorse_bin.stat.exists
 
@@ -39,4 +39,4 @@
 
   become: yes
   become_user: "{{ gitlab_user }}"
-  when: not t_gitlab_workhorse_bin.stat.exists or not (t_gitlab_workhorse_version_status|d(True))
+  when: not t_gitlab_workhorse_bin.stat.exists or not (t_gitlab_workhorse_version_status|d(False))

@@ -1,12 +1,35 @@
 ---
 
+- name: get required gitaly version
+  command: "cat {{ gitlab_gitlab_dir }}/GITALY_SERVER_VERSION"
+  changed_when: no
+  register: t_gitlab_gitaly_version
+
 - name: stat gitaly bin
   stat:
     path: "{{ gitlab_gitaly_dir }}/gitaly"
-  register: t_gitlab_gitaly_bin_stat
+  register: t_gitlab_gitaly_bin
+
+- block:
+    - name: get current gitaly version
+      command: "{{ gitlab_gitaly_dir }}/gitaly --version"
+      changed_when: no
+      register: t_gitlab_gitaly_version_current
+
+    - name: set gitlab-gitaly version status
+      set_fact:
+        t_gitlab_gitaly_version_status: yes
+      when: ("Gitaly, version " + t_gitlab_gitaly_version.stdout) == t_gitlab_gitaly_version_current.stdout
+
+  when: t_gitlab_gitaly_bin.stat.exists
 
 
 - block:
+    - name: clean gitaly
+      file:
+        path: "{{ gitlab_gitaly_dir }}"
+        state: absent
+
     - name: install gitaly
       shell: "bundle exec rake 'gitlab:gitaly:install[{{ gitlab_gitaly_dir }},{{ gitlab_repositories_dir }}]' RAILS_ENV=production"
       args:
@@ -16,7 +39,7 @@
       become: yes
       become_user: "{{ gitlab_user }}"
 
-  when: not t_gitlab_gitaly_bin_stat.stat.exists
+  when: not t_gitlab_gitaly_bin.stat.exists or not (t_gitlab_gitaly_version_status|d(False))
 
 - name: deploy gitaly config.toml
   template:

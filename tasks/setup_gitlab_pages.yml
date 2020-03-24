@@ -30,14 +30,14 @@
 
     - name: set gitlab-pages version status
       set_fact:
-        t_gitlab_pages_version_status: no
-      when: t_gitlab_pages_version.stdout != t_gitlab_pages_version_current.stdout
+        t_gitlab_pages_version_status: yes
+      when: t_gitlab_pages_version.stdout == t_gitlab_pages_version_current.stdout
 
   when: t_gitlab_pages_bin.stat.exists
 
 
 - block:
-    - name: clean
+    - name: clean gitlab-pages
       command: "git clean -fx"
       args:
         chdir: "{{ gitlab_pages_dir }}"
@@ -89,4 +89,4 @@
       become: yes
       become_user: "{{ gitlab_user }}"
 
-  when: not t_gitlab_pages_bin.stat.exists or not (t_gitlab_pages_version_status|d(True))
+  when: not t_gitlab_pages_bin.stat.exists or not (t_gitlab_pages_version_status|d(False))
