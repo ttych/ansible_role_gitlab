@@ -5,45 +5,27 @@
 #   become: yes
 #   become_user: "{{ gitlab_user }}"
 
+- name: get required gitlab-shell version
+  command: "cat {{ gitlab_gitlab_dir }}/GITLAB_SHELL_VERSION"
+  changed_when: no
+  register: t_gitlab_shell_version
+
+- name: checkout gitlab-shell repository
+  git:
+    repo: "{{ gitlab_shell_repository }}"
+    dest: "{{ gitlab_shell_dir }}"
+    version: "v{{ t_gitlab_shell_version.stdout }}"
+    accept_hostkey: yes
+    umask: "022"
+    force: yes
+  register: t_gitlab_shell_checkout
+  become: yes
+  become_user: "{{ gitlab_user }}"
+
 - name: stat gitlab-shell bin
   stat:
     path: "{{ gitlab_shell_dir }}/bin/gitlab-shell"
-  register: t_gitlab_shell_bin_stat
-
-
-- block:
-
-    - name: clean gitlab-shell dir
-      file:
-        path: "{{ gitlab_shell_dir }}"
-        state: absent
-
-    - name: recreate gitlab-shell dir
-      file:
-        path: "{{ gitlab_shell_dir }}"
-        owner: "{{ gitlab_user }}"
-        group: "{{ gitlab_group }}"
-        mode: "0750"
-        state: directory
-
-    - name: get required gitlab-shell version
-      command: "cat {{ gitlab_gitlab_dir }}/GITLAB_SHELL_VERSION"
-      changed_when: no
-      register: t_gitlab_shell_version
-
-    - name: checkout gitlab-shell repository
-      git:
-        repo: "{{ gitlab_shell_repository }}"
-        dest: "{{ gitlab_shell_dir }}"
-        version: "v{{ t_gitlab_shell_version.stdout }}"
-        accept_hostkey: yes
-        umask: "022"
-        force: yes
-      register: t_gitlab_shell_checkout
-      become: yes
-      become_user: "{{ gitlab_user }}"
-
-  when: not t_gitlab_shell_bin_stat.stat.exists
+  register: t_gitlab_shell_bin
 
 
 - name: setup gitlab-shell workspace
@@ -59,6 +41,13 @@
 
 
 - block:
+    - name: clean
+      command: "git clean -fx"
+      args:
+        chdir: "{{ gitlab_shell_dir }}"
+      environment:
+        PATH: "{{ gitlab_build_PATH }}"
+
     - name: bundle install
       command: "bundle install -j{{ ansible_processor_vcpus|d(ansible_processor_count) }}"
       args:
@@ -82,7 +71,7 @@
 
   become: yes
   become_user: "{{ gitlab_user }}"
-  when: not t_gitlab_shell_bin_stat.stat.exists
+  when: not t_gitlab_shell_bin.stat.exists or t_gitlab_shell_checkout.changed
 
 
 - name: deploy gitlab-shell config.yml
