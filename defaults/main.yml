@@ -121,7 +121,7 @@ gitlab_git_configs:
   - { option: receive.advertisePushOptions, value: "true" }
   - { option: core.fsyncObjectFiles, value: "true" }
 
-gitlab_gitlab_version: v12.9.0  # v11.11.8
+gitlab_gitlab_version: 12-9-stable
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
 gitlab_gitlab_port: 3125
 gitlab_gitlab_root_password_file: "{{ gitlab_git_home }}/.gitlab_root_password"
