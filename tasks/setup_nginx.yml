@@ -17,8 +17,8 @@
         src: "nginx/{{ t_gitlab_nginx_site }}"
         dest: "{{ nginx_sites_available }}/{{ t_gitlab_nginx_site }}"
         mode: "0644"
-        owner: root
-        group: 0
+        owner: "{{ gitlab_user }}"
+        group: "{{ gitlab_group }}"
 
     - name: link gitlab to sites_enabled
       file:
