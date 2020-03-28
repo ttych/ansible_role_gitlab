@@ -1,5 +1,6 @@
 ---
-
+## install
+# https://docs.gitlab.com/12.9/ee/install/installation.html
 ## service architecture
 # https://docs.gitlab.com/ee/development/architecture.html
 ## backup
@@ -17,6 +18,8 @@
     - include: workspace.yml
 
     - include: install.yml
+
+    - include: certificates.yml
 
     - include: setup_db.yml
 

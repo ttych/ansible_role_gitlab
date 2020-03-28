@@ -1,18 +1,29 @@
 ---
 
 - block:
+
+    - name: use nginx gitlab
+      set_fact:
+        t_gitlab_nginx_site: gitlab
+      when: not gitlab_want_https
+
+    - name: use nginx gitlab-ssl
+      set_fact:
+        t_gitlab_nginx_site: gitlab-ssl
+      when: gitlab_want_https
+
     - name: deploy gitlab to sites-available
       template:
-        src: nginx/gitlab
-        dest: "{{ nginx_sites_available }}/gitlab"
+        src: "nginx/{{ t_gitlab_nginx_site }}"
+        dest: "{{ nginx_sites_available }}/{{ t_gitlab_nginx_site }}"
         mode: "0644"
         owner: root
         group: 0
 
     - name: link gitlab to sites_enabled
       file:
-        src: "{{ nginx_sites_available }}/gitlab"
-        dest: "{{ nginx_sites_enabled }}/gitlab"
+        src: "{{ nginx_sites_available }}/{{ t_gitlab_nginx_site }}"
+        dest: "{{ nginx_sites_enabled }}/{{ t_gitlab_nginx_site }}"
         state: link
 
   when: has_nginx

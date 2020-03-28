@@ -1,0 +1,65 @@
+---
+
+- name: set self-signed certificate to false
+  set_fact:
+    gitlab_self_signed_certificate: no
+
+- block: # certificates
+
+    - block: # self-signed
+        - name: stat current certificate
+          stat:
+            path: "{{ gitlab_ssl_dir }}/gitlab.crt"
+          register: t_gitlab_cert_file
+
+        - name: deploy openssl_req.conf
+          template:
+            src: ssl/openssl_req.conf
+            dest: "{{ gitlab_req_conf }}"
+            mode: "0600"
+            owner: "{{ gitlab_user }}"
+            group: "{{ gitlab_group }}"
+
+        - name: create self signed
+          command: "openssl req -config {{ gitlab_req_conf }} -newkey rsa:4096 -x509 -nodes -days 3560 -out {{ gitlab_cert_file }} -keyout {{ gitlab_key_file }}"
+          args:
+            chdir: "{{ gitlab_ssl_dir }}"
+          when: not t_gitlab_cert_file.stat.exists
+
+        - name: set permission
+          file:
+            path: "{{ item }}"
+            mode: "0640"
+            owner: "{{ gitlab_user }}"
+            group: "{{ nginx_group|d(gitlab_group) }}"
+            state: file
+          loop:
+            - "{{ gitlab_cert_file }}"
+            - "{{ gitlab_key_file }}"
+
+        - name: set self-signed certificate to false
+          set_fact:
+            gitlab_self_signed_certificate: yes
+
+      when: gitlab_use_cert is not defined or gitlab_use_key is not defined or gitlab_use_ca is not defined
+
+    - block: # defined
+        - name: deploy certs
+          copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+            remote_src: yes
+            mode: "0640"
+            owner: "{{ gitlab_user }}"
+            group: "{{ nginx_group|d(gitlab_group) }}"
+          loop:
+            - { src: "{{ gitlab_use_ca }}", dest: "{{ gitlab_ca_file }}" }
+            - { src: "{{ gitlab_use_cert }}", dest: "{{ gitlab_cert_file }}" }
+            - { src: "{{ gitlab_use_key }}", dest: "{{ gitlab_key_file }}" }
+
+      when:
+        - gitlab_use_cert is defined
+        - gitlab_use_key is defined
+        - gitlab_use_ca is defined
+
+  when: gitlab_want_https

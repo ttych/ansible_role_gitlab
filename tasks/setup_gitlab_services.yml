@@ -24,7 +24,7 @@
         - "{{ gitlab_services }}"
         - "{{ gitlab_daemontools_scripts_template }}"
 
-    - name: supervise (link) daemontools service
+    - name: supervise (link) daemontools services
       file:
         src: "{{ gitlab_daemontools_dir }}/{{ item }}"
         dest: "{{ daemontools_svscan_dir }}/gitlab_{{ item }}"

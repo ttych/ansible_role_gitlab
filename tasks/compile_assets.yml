@@ -1,28 +1,31 @@
 ---
 
-- name: compile GetText PO files
-  shell: "bundle exec rake gettext:compile RAILS_ENV=production"
-  args:
-    chdir: "{{ gitlab_gitlab_dir }}"
-  environment:
-    PATH: "{{ gitlab_build_PATH }}"
-  become: yes
-  become_user: "{{ gitlab_user }}"
+- block:
+    - name: compile GetText PO files
+      shell: "bundle exec rake gettext:compile RAILS_ENV=production"
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_build_PATH }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
 
-- name: yarn install
-  shell: "yarn install --production --pure-lockfile"
-  args:
-    chdir: "{{ gitlab_gitlab_dir }}"
-  environment:
-    PATH: "{{ gitlab_build_PATH }}"
-  become: yes
-  become_user: "{{ gitlab_user }}"
+    - name: yarn install
+      shell: "yarn install --production --pure-lockfile"
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_build_PATH }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
 
-- name: compile Assets
-  shell: "bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production NODE_OPTIONS=\"--max_old_space_size=4096\""
-  args:
-    chdir: "{{ gitlab_gitlab_dir }}"
-  environment:
-    PATH: "{{ gitlab_build_PATH }}"
-  become: yes
-  become_user: "{{ gitlab_user }}"
+    - name: compile Assets
+      shell: "bundle exec rake gitlab:assets:compile RAILS_ENV=production NODE_ENV=production NODE_OPTIONS=\"--max_old_space_size=4096\""
+      args:
+        chdir: "{{ gitlab_gitlab_dir }}"
+      environment:
+        PATH: "{{ gitlab_build_PATH }}"
+      become: yes
+      become_user: "{{ gitlab_user }}"
+
+  when: t_gitlab_gitlab_checkout.changed

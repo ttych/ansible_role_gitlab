@@ -13,8 +13,11 @@ user: git
 # only listen on a Unix domain socket. For Unix domain sockets use
 # "http+unix://<urlquoted-path-to-socket>", e.g.
 # "http+unix://%2Fpath%2Fto%2Fsocket"
+{% if gitlab_want_https %}
+gitlab_url: "https://localhost:{{ gitlab_gitlab_port }}"
+{% else %}
 gitlab_url: "http://localhost:{{ gitlab_gitlab_port }}"
-
+{% endif %}
 # See installation.md#using-https for additional HTTPS configuration details.
 http_settings:
 #  read_timeout: 300
@@ -22,7 +25,10 @@ http_settings:
 #  password: somepass
 #  ca_file: /etc/ssl/cert.pem
 #  ca_path: /etc/pki/tls/certs
-  self_signed_cert: false
+{% if gitlab_use_ca is defined %}
+   ca_file: {{ gitlab_ca_file }}
+{% endif %}
+  self_signed_cert: {{ gitlab_self_signed_certificate | lower }}
 
 # File used as authorized_keys for gitlab user
 auth_file: "{{ gitlab_git_ssh_dir }}/authorized_keys"

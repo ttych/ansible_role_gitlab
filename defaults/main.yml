@@ -2,6 +2,10 @@
 
 want_gitlab: false
 
+gitlab_want_https: true
+# gitlab_use_ca:
+# gitlab_use_cert:
+# gitlab_use_key:
 
 gitlab_user: git
 gitlab_group: git
@@ -38,6 +42,7 @@ gitlab_repositories_dir: "{{ gitlab_app_dir }}/repositories"
 gitlab_distfiles_dir: "{{ gitlab_app_dir }}/distfiles"
 gitlab_tmp_dir: "{{ gitlab_app_dir }}/tmp"
 gitlab_etc_dir: "{{ gitlab_app_dir }}/etc"
+gitlab_ssl_dir: "{{ gitlab_etc_dir }}/ssl"
 gitlab_bin_dir: "{{ gitlab_app_dir }}/bin"
 gitlab_run_dir: "{{ gitlab_app_dir }}/run"
 gitlab_tools_dir: "{{ gitlab_app_dir }}/tools"
@@ -46,6 +51,16 @@ gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
 gitlab_tools_go_dir: "{{ gitlab_tools_dir }}/go"
 gitlab_tools_redis_dir: "{{ gitlab_tools_dir }}/redis"
 gitlab_tools_gmake_dir: "{{ gitlab_tools_dir }}/gmake"
+
+gitlab_ca_file: "{{ gitlab_ssl_dir }}/ca.pem"
+gitlab_cert_file: "{{ gitlab_ssl_dir }}/gitlab.crt"
+gitlab_key_file: "{{ gitlab_ssl_dir }}/gitlab.key"
+gitlab_req_conf: "{{ gitlab_ssl_dir }}/openssl_req.conf"
+gitlab_cert_countryName: "FR"
+gitlab_cert_stateOrProvinceName: "Ile de France"
+gitlab_cert_localityName: "Paris"
+gitlab_cert_organizationName: "{{ gitlab_domain }}"
+gitlab_cert_organizationalUnitName: "Infra"
 
 gitlab_tools_PATH: "{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_go_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ gitlab_tools_gmake_dir }}/bin"
 gitlab_gitlab_PATH: "{{ gitlab_shell_dir }}/bin:{{ gitlab_workhorse_dir }}:{{ gitlab_pages_dir }}/bin:{{ gitlab_gitaly_dir }}"
@@ -59,6 +74,7 @@ gitlab_directories:
   - { path: "{{ gitlab_tools_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_tmp_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_etc_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
+  - { path: "{{ gitlab_ssl_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0700" }
   - { path: "{{ gitlab_bin_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_run_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
