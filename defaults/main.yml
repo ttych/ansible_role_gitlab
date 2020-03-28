@@ -79,7 +79,7 @@ gitlab_directories:
   - { path: "{{ gitlab_run_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
   - { path: "{{ gitlab_distfiles_dir }}", owner: "{{ gitlab_user }}", group: "{{ gitlab_group }}", mode: "0755" }
 
-gitlab_git_version: 2.25.1
+gitlab_git_version: 2.26.0
 gitlab_git_release: "git-{{ gitlab_git_version }}"
 gitlab_git_archive: "{{ gitlab_git_release }}.tar.xz"
 gitlab_git_url: "https://mirrors.edge.kernel.org/pub/software/scm/git/{{ gitlab_git_archive }}"
@@ -99,7 +99,7 @@ gitlab_postgresql_owner: postgres
 gitlab_postgresql_db: gitlabhq_production
 gitlab_postgresql_user: "{{ gitlab_user }}"
 
-gitlab_redis_version: 5.0.7
+gitlab_redis_version: 5.0.8
 gitlab_redis_release: "redis-{{ gitlab_redis_version }}"
 gitlab_redis_archive: "{{ gitlab_redis_release }}.tar.gz"
 gitlab_redis_url: "http://download.redis.io/releases/{{ gitlab_redis_archive }}"
