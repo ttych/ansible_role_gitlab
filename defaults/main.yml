@@ -16,7 +16,7 @@ gitlab_users:
     group: git
     groups:
     home: "{{ gitlab_git_home|default('/home/git') }}"
-    shell: /usr/sbin/nologin
+    shell: /bin/sh
     uid: 3125
     home_mode: '0700'
     password: '*'
@@ -51,6 +51,7 @@ gitlab_tools_ruby_dir: "{{ gitlab_tools_dir }}/ruby"
 gitlab_tools_go_dir: "{{ gitlab_tools_dir }}/go"
 gitlab_tools_redis_dir: "{{ gitlab_tools_dir }}/redis"
 gitlab_tools_gmake_dir: "{{ gitlab_tools_dir }}/gmake"
+gitlab_tools_yarn_dir: "{{ gitlab_tools_dir }}/yarn"
 
 gitlab_ca_file: "{{ gitlab_ssl_dir }}/ca.pem"
 gitlab_cert_file: "{{ gitlab_ssl_dir }}/gitlab.crt"
@@ -62,7 +63,7 @@ gitlab_cert_localityName: "Paris"
 gitlab_cert_organizationName: "{{ gitlab_domain }}"
 gitlab_cert_organizationalUnitName: "Infra"
 
-gitlab_tools_PATH: "{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_go_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ gitlab_tools_gmake_dir }}/bin"
+gitlab_tools_PATH: "{{ gitlab_tools_git_dir }}/bin:{{ gitlab_tools_ruby_dir }}/bin:{{ gitlab_tools_go_dir }}/bin:{{ gitlab_tools_redis_dir }}/bin:{{ gitlab_tools_gmake_dir }}/bin:{{ gitlab_tools_yarn_dir }}/bin"
 gitlab_gitlab_PATH: "{{ gitlab_shell_dir }}/bin:{{ gitlab_workhorse_dir }}:{{ gitlab_pages_dir }}/bin:{{ gitlab_gitaly_dir }}"
 gitlab_build_PATH: "{{ gitlab_tools_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 gitlab_full_PATH: "{{ gitlab_tools_PATH }}:{{ gitlab_gitlab_PATH }}:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
@@ -121,15 +122,15 @@ gitlab_git_configs:
   - { option: receive.advertisePushOptions, value: "true" }
   - { option: core.fsyncObjectFiles, value: "true" }
 
-gitlab_gitlab_version: 12-9-stable
+gitlab_gitlab_version: 12-8-stable
 gitlab_gitlab_repository: https://gitlab.com/gitlab-org/gitlab-foss.git
-gitlab_gitlab_port: 3125
+gitlab_gitlab_port: 8080
 gitlab_gitlab_root_password_file: "{{ gitlab_git_home }}/.gitlab_root_password"
 gitlab_gitlab_db_key_base_production_file: "{{ gitlab_git_home }}/.gitlab_db_key_base_production"
-gitlab_gitlab_web_server: puma
+gitlab_gitlab_web_server: unicorn
 gitlab_gitlab_sockets_dir: "{{ gitlab_gitlab_dir }}/tmp/sockets"
 gitlab_gitlab_socket: "{{ gitlab_gitlab_sockets_dir }}/gitlab.socket"
-gitlab_gitlab_auth_backend: http://127.0.0.1:8080
+gitlab_gitlab_auth_backend: "http://127.0.0.1:{{ gitlab_gitlab_port }}"
 
 gitlab_gitaly_socket: "{{ gitlab_gitlab_sockets_dir }}/private/gitaly.socket"
 
@@ -160,4 +161,3 @@ gitlab_services:
 
 
 # FIXME: gitlab.yml -> elasticsearch
-# FIXME: https

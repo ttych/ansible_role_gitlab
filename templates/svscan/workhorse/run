@@ -9,25 +9,12 @@ APP_USER_HOME="{{ gitlab_git_home }}"
 APP_ROOT="{{ gitlab_gitlab_dir }}"
 APP_SOCKET="{{ gitlab_gitlab_socket }}"
 APP_AUTH_BACKEND="{{ gitlab_gitlab_auth_backend }}"
-WORKHORSE_TCP="{{ gitlab_workhorse_tcp }}"
-WORKHORSE_TCP_ADDR="{{ gitlab_workhorse_tcp_addr }}"
 WORKHORSE_SOCKET="{{ gitlab_workhorse_socket }}"
 
-set -e
+workhorse_args="-listenUmask 0 -listenNetwork unix -listenAddr $WORKHORSE_SOCKET -authBackend $APP_AUTH_BACKEND -authSocket $APP_SOCKET -documentRoot $APP_ROOT/public"
 
-cd "$APP_ROOT"
-
-workhorse_args=
-case "$WORKHORSE_TCP" in
-    [Yy][Ee][Ss])
-        workhorse_args="-listenNetwork tcp -listenAddr $WORKHORSE_TCP_ADDR"
-        ;;
-    [Nn][Oo]|*)
-        workhorse_args="-listenNetwork unix -listenAddr $WORKHORSE_SOCKET"
-        ;;
-esac
-workhorse_args="-listenUmask 0 $workhorse_args -authBackend $APP_AUTH_BACKEND -authSocket $APP_SOCKET -documentRoot $APP_ROOT/public"
+cd "$APP_ROOT" || exit 1
 
 exec setuidgid "$APP_USER" \
-     env HOME="$APP_USER_HOME" \
+     env PATH="{{ gitlab_workhorse_dir }}:$PATH" HOME="$APP_USER_HOME" \
      "{{ gitlab_workhorse_dir }}/gitlab-workhorse" $workhorse_args

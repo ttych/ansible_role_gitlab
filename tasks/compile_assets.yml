@@ -10,7 +10,7 @@
       become: yes
       become_user: "{{ gitlab_user }}"
 
-    - name: yarn install
+    - name: install yarn dependencies
       shell: "yarn install --production --pure-lockfile"
       args:
         chdir: "{{ gitlab_gitlab_dir }}"

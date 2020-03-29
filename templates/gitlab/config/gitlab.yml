@@ -30,7 +30,7 @@ production: &base
   ## GitLab settings
   gitlab:
     ## Web server settings (note: host is the FQDN, do not include http://)
-    host: localhost
+    host: {{ gitlab_fqdn }}
 {% if gitlab_want_https %}
     port: 443
     https: true

@@ -1,0 +1,24 @@
+---
+
+- block:
+    - name: create yarn directories
+      file:
+        path: "{{ item }}"
+        mode: "0755"
+        state: directory
+      loop:
+        - "{{ gitlab_tools_yarn_dir }}"
+        - "{{ gitlab_tools_yarn_dir }}/bin"
+
+    - name: find yarn
+      command: which yarnpkg
+      changed_when: no
+      register: t_gitlab_yarn_bin
+
+    - name: link yarn
+      file:
+        src: "{{ t_gitlab_yarn_bin.stdout }}"
+        dest: "{{ gitlab_tools_yarn_dir }}/bin/yarn"
+        state: link
+
+  when: ansible_distribution == 'Ubuntu'

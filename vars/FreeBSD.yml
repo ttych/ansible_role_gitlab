@@ -22,7 +22,7 @@ gitlab_prereq_packages:
   - gettext
   - go
   - node
-  - npm
+  - yarn
   - apg
 
 gitlab_CPPFLAGS: -isystem/usr/local/include

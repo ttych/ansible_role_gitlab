@@ -91,7 +91,7 @@ server {
 
   ## Strong SSL Security
   ## https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html & https://cipherli.st/
-  ssl on;
+  # ssl on;
   ssl_certificate {{ gitlab_cert_file }};
   ssl_certificate_key {{ gitlab_key_file }};
 

@@ -30,7 +30,7 @@ gitlab_prereq_packages:
   - libpcre2-dev
   - golang
   - nodejs
-  - npm
+  - yarnpkg
   - postgresql-client
   - libpq-dev
   - xsltproc

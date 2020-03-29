@@ -13,11 +13,8 @@ user: git
 # only listen on a Unix domain socket. For Unix domain sockets use
 # "http+unix://<urlquoted-path-to-socket>", e.g.
 # "http+unix://%2Fpath%2Fto%2Fsocket"
-{% if gitlab_want_https %}
-gitlab_url: "https://localhost:{{ gitlab_gitlab_port }}"
-{% else %}
-gitlab_url: "http://localhost:{{ gitlab_gitlab_port }}"
-{% endif %}
+# gitlab_url: "http://localhost:{{ gitlab_gitlab_port }}"
+gitlab_url: "http+unix://{{ gitlab_gitlab_socket|urlencode|replace('/', '%2f') }}"
 # See installation.md#using-https for additional HTTPS configuration details.
 http_settings:
 #  read_timeout: 300
