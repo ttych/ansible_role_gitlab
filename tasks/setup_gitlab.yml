@@ -36,8 +36,8 @@
     - { template: gitlab/config/gitlab.yml,
         dest: config/gitlab.yml,
         mode: '0644' }
-    - { template: gitlab/config/unicorn.rb,
-        dest: config/unicorn.rb,
+    - { template: "gitlab/config/{{ gitlab_gitlab_web_server }}.rb",
+        dest: "config/{{ gitlab_gitlab_web_server }}.rb",
         mode: '0644' }
     - { template: gitlab/config/initializers/rack_attack.rb,
         dest: config/initializers/rack_attack.rb,
