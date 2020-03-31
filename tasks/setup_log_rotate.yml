@@ -1,0 +1,11 @@
+---
+
+- name: deploy logrotate
+  template:
+    src: "logrotate/{{ item }}"
+    dest: "{{ gitlab_logrotate_dir }}/{{ item }}"
+    mode : "0644"
+    owner: "{{ gitlab_user }}"
+    group: "{{ gitlab_group }}"
+  loop:
+    - gitlab

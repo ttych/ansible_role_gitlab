@@ -27,3 +27,5 @@ gitlab_prereq_packages:
 
 gitlab_CPPFLAGS: -isystem/usr/local/include
 gitlab_LDFLAGS: -L/usr/local/lib
+
+gitlab_logrotate_dir: /usr/local/etc/logrotate.d

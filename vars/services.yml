@@ -2,3 +2,5 @@
 
 gitlab_dir: "{{ services_dir }}/gitlab"
 gitlab_git_home: "{{ gitlab_dir }}/git"
+
+gitlab_logrotate_dir: "{{ services_logrotate_d }}"

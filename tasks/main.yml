@@ -42,8 +42,7 @@
 
     - include: setup_gitlab_postinstall.yml
 
-    # FIXME: implement log rotation
-    # - include: setup_log_rotate.yml
+    - include: setup_log_rotate.yml
 
     - include: compile_assets.yml
 
