@@ -11,9 +11,9 @@ gitlab_user: git
 gitlab_group: git
 
 gitlab_users:
-  - name: git
-    comment: git
-    group: git
+  - name: "{{ gitlab_user }}"
+    comment: "{{ gitlab_user }}"
+    group: "{{ gitlab_group }}"
     groups:
     home: "{{ gitlab_git_home|default('/home/git') }}"
     shell: /bin/sh
@@ -22,7 +22,7 @@ gitlab_users:
     password: '*'
 
 gitlab_groups:
-  - { name: git, gid: 3125 }
+  - { name: "{{ gitlab_group }}", gid: 3125 }
 
 gitlab_domain: local
 gitlab_root_email: "git@{{ gitlab_domain }}"
