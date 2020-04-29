@@ -18,7 +18,7 @@
 
     - name: set gitlab_git_version_valid
       set_fact:
-        gitlab_git_version_valid: "{{ t_gitlab_git_version.stdout is version('2.22.0', '>=') }}"
+        gitlab_git_version_valid: "{{ t_gitlab_git_version.stdout is version(gitlab_git_version, '>=') }}"
 
     - name: check Git shared object dependency with pcre2
       shell: "ldd {{ gitlab_tools_git_dir }}/bin/git | grep pcre2"
